@@ -4,19 +4,19 @@ import { siteConfig } from "./site"
 
 export const REPOS = [
   "animehi-stream",
-  "t3-insider",
-  "chatty",
-  "blogfolio",
+  "next-insider",
+  "chatup",
+  "benjoquilario.site",
   "just-work",
-  "marino-clothing",
+  "bq-player",
 ]
 
 export const REPOS_URL = [
-  ...REPOS,
   "anitaku-api",
   "amabank-landing-page",
   "next-movies",
   "crud-invoice-app",
+  "marino-clothing",
 ]
 
 export const qa = [

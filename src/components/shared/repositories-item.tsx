@@ -1,10 +1,7 @@
 import { Book, GitFork, Star, GithubIcon, ExternalLink } from "lucide-react"
 import React from "react"
 import { Badge } from "@/components/ui/badge"
-import {
-  TypographyH3,
-  TypographyP,
-} from "@/components/typography"
+import { TypographyH3, TypographyP } from "@/components/typography"
 
 async function getRepos(repo: string) {
   const res = await fetch(
@@ -46,7 +43,7 @@ export default async function RepositoriesItem({
             </div>
           </div>
 
-          <TypographyP className="mt-2 line-clamp-3 text-sm leading-7 text-foreground/90 md:text-[15px]">
+          <TypographyP className="mt-2 line-clamp-3 text-[13px] leading-7 text-foreground/90 md:text-[14px]">
             {repositories.description}
           </TypographyP>
 
