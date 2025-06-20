@@ -1,4 +1,4 @@
-import { allBlogs } from "contentlayer/generated"
+import { getAllBlogs } from "@/lib/blog"
 import { siteConfig } from "@/config/site"
 
 function convertToContentEncoded(input: string): string {
@@ -11,6 +11,8 @@ function convertToContentEncoded(input: string): string {
 }
 
 function generateRSS() {
+  const allBlogs = getAllBlogs()
+
   const items = allBlogs.map(
     (blog) => `<item>
                 <title>${blog.title}</title>

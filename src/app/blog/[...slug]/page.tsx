@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import { Mdx } from "@/components/mdx-components"
-import { allBlogs } from "contentlayer/generated"
+// import { Mdx } from "@/components/mdx-components"
+// import { allBlogs } from "contentlayer/generated"
 import { notFound } from "next/navigation"
 import { Calendar, Clock } from "lucide-react"
 import { relativeDate } from "@/lib/date"
@@ -8,6 +8,7 @@ import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { env } from "@/env.mjs"
+import { getAllBlogs } from "@/lib/blog"
 
 interface BlogProps {
   params: {
@@ -18,13 +19,13 @@ interface BlogProps {
 export async function generateMetadata({
   params,
 }: {
-  params: {
-    slug: string[]
-  }
+  params: Promise<{ slug: string }>
 }): Promise<Metadata | undefined> {
-  const blog = allBlogs.find(
-    (blog) => blog.slugAsParams === params.slug.join("/")
-  )
+  const { slug } = await params
+
+  const allBlogs = getAllBlogs()
+
+  const blog = allBlogs.find((blog) => blog.slugAsParams === slug[0])
 
   if (!blog) {
     return
@@ -46,19 +47,20 @@ export async function generateMetadata({
   }
 }
 
-async function getBlogFromParams(params: BlogProps["params"]) {
-  const slug = params.slug.join("/")
-  const blog = allBlogs.find((blog) => blog.slugAsParams === slug)
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const allBlogs = getAllBlogs()
+  const blog = allBlogs.find((blog) => blog.id === slug[0])
 
-  if (!blog) return null
+  if (!blog) {
+    notFound()
+  }
 
-  return blog
-}
-
-export default async function ArticlePage({ params }: BlogProps) {
-  const blog = await getBlogFromParams(params)
-
-  if (!blog) notFound()
+  const { default: Post } = await import(`@/content/blog/${slug}.mdx`)
 
   return (
     <article className="max-w-none break-words py-6">
@@ -70,27 +72,27 @@ export default async function ArticlePage({ params }: BlogProps) {
         Back
       </Link>
       <h1 className="my-2 inline-block font-heading text-4xl leading-tight lg:text-5xl">
-        {blog.title}
+        {blog?.title}
       </h1>
-      {blog.description && <p>{blog.description}</p>}
+      {blog?.description && <p>{blog?.description}</p>}
 
       <hr className="my-4" />
       <div className="flex flex-wrap items-stretch justify-start gap-3">
         <div className="flex shrink-0 items-center gap-2">
           <Calendar className="h-4 w-4" aria-hidden />
           <span className="text-sm text-muted-foreground/90">
-            {relativeDate(blog.date)}
+            {relativeDate(blog?.date)}
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Clock className="h-4 w-4" aria-hidden />
           <span className="text-sm text-muted-foreground/90">
-            {blog.readingTime?.text}
+            {blog?.readingTime?.text}
           </span>
         </div>
       </div>
       <hr className="my-4" />
-      <Mdx code={blog.body.code} />
+      <Post />
     </article>
   )
 }

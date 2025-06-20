@@ -1,25 +1,22 @@
 import { Metadata } from "next"
-import "@/styles/globals.css"
-import { Oswald } from "next/font/google"
-import localFont from "next/font/local"
+import "./globals.css"
+import { Geist, Geist_Mono } from "next/font/google"
 import Header from "@/components/header"
-import { cn } from "@/lib/utils"
 import ThemeProvider from "@/components/theme-provider"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { siteConfig } from "@/config/site"
 import Footer from "@/components/site-footer"
 import { Toaster } from "@/components/ui/toaster"
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/react"
 
-const fontLogo = Oswald({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-oswald",
 })
 
-const fontSans = localFont({
-  src: "../assets/fonts/GeistVF.woff",
-  variable: "--font-sans",
-  weight: "100 900",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 })
 
 export const metadata: Metadata = {
@@ -28,7 +25,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   metadataBase: new URL("https://benjoquilario.site"),
   description: siteConfig.description,
@@ -72,7 +69,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontLogo.variable} min-h-screen font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiase min-h-screen`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="mx-auto max-w-3xl p-4">

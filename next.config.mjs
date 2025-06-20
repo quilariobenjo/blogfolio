@@ -1,13 +1,18 @@
 import "./src/env.mjs"
-
-import { withContentlayer } from "next-contentlayer"
+import createMDX from "@next/mdx"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   images: {
     domains: ["avatars.githubusercontent.com"],
   },
+  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  serverExternalPackages: ["gray-matter"],
 }
 
-export default withContentlayer(nextConfig)
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+  extension: /\.(md|mdx)$/,
+})
+
+export default withMDX(nextConfig)

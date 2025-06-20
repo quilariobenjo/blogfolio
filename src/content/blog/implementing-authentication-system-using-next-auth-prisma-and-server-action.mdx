@@ -1,0 +1,785 @@
+---
+title: Implement authentication system using Next.js with app dir and server components
+description: A guide that explains how to build a authentication system using Next-Auth with credentials providers and Prisma Adapter.
+date: 2023-09-19
+---
+
+In this article post, I'll walk you through the step-by-step process of creating authentication system for your Next.js application using Next Auth and Prisma adapter credentials providers. You’ll have a solid foundation to build flexible and scalable user access control systems by the end.
+
+In this project, we'll be using Next.js with the app directory. As you know, after Next.js 13, we create API routes using the app directory and route files.
+
+First, let's talk about what technologies we'll be using.
+
+### Next.js
+
+Next.js is a React framework for building full-stack web applications. You use React Components to build user interfaces, and Next.js for additional features and optimizations.
+
+Under the hood, Next.js also abstracts and automatically configures tooling needed for React, like bundling, compiling, and more. This allows you to focus on building your application instead of spending time with configuration.
+
+Whether you're an individual developer or part of a larger team, Next.js can help you build interactive, dynamic, and fast React applications.
+
+### Prisma
+
+Prisma is an open source next-generation ORM.
+
+### NextAuth.js
+
+NextAuth.js is a complete open-source authentication solution for Next.js applications. It is designed from the ground up to support Next.js and Serverless.
+
+### PostgreSQL
+
+PostgreSQL is a powerful, open source object-relational database system with more than 15 years of active development. It has a proven architecture, proven reliability, data integrity, and correctness.
+
+First, let's create a new Next.js application. You can follow the official guide [here](https://nextjs.org/docs). I will be using `pnpm` for this, but you can use `npm` or `yarn` as well. We'll be using TypeScript.
+
+```bash
+pnpm create next-app auth-example --template typescript
+```
+
+After creating a new Next.js application, let's install the necessary dependencies for this project.
+
+```bash
+pnpm add next-auth@beta @prisma/client @auth/prisma-adapter @hookform/resolvers react-hook-form zod bcrypt
+```
+
+```bash
+pnpm add prisma -D
+```
+
+To add Next Auth.js to the project create a file called route.ts in `app/api/auth/[…nextauth]` folder.
+
+You can directly add your auth options in this file, but I prefer using a different folder to be able to reuse the options later.
+
+Let’s create an `auth.ts` file in `src/auth.ts` folder and give providers.
+
+```js
+import NextAuth, { DefaultSession } from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
+import db from "@/lib/db"
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      async authorize(credentials) {
+        // ...
+      },
+    }),
+  ],
+  debug: process.env.NODE_ENV === "development",
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+})
+```
+
+Create a `db.ts` file that will serve as our database generated client in `src/lib`:
+
+```js
+
+// src/lib/db.ts
+import { PrismaClient } from "@/generated/prisma"
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>
+} & typeof global
+
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma
+```
+
+Just copy and paste the above code into the `db.ts` file.
+
+We are now ready to create a route handler and add these options. Open up the route file and add this:
+
+`app/api/auth/[...nextauth]/route.ts`
+
+```js
+import { authOptions } from "@/utils/auth"
+
+const handler = NextAuth(authOptions)
+
+export { handler as GET, handler as POST }
+```
+
+Now initialize Prisma and create our authentication schema:
+
+```bash
+npx prisma init
+```
+
+After it's done, open the `schema.prisma` file in the `prisma` folder and add this code block:
+
+```js
+
+generator client {
+  provider = "prisma-client-js"
+  // In Prisma ORM 7, Prisma Client will no longer be generated in node_modules by default and will require an output path to be defined.
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String @id @default(cuid())
+  name            String?
+  email           String? @unique
+  emailVerified   DateTime?
+  image           String?
+  hashedPassword  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  jobPosts        JobPost[]
+  accounts        Account[]
+}
+
+// I'll add this Account model in case you want to add other credentials like Google or GitHub
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+```
+
+After creating our authentication schema, create a [PostgreSQL](https://console.prisma.io/) database. You can use Prisma's hosted PostgreSQL or create a PostgreSQL database with Neon, which offers a generous free tier.
+
+```bash
+  postgres://59b842f610992f350c99576c3c357e56588a3adec9d420290137e53611d9aca5:sk_U5rCfJW6ByA0t9w8nAd1e@db.prisma.io:5432/?sslmode=require/
+```
+
+Create a `.env` file in the root folder and add `DATABASE_URL` with the value of your database connection string:
+
+```bash
+DATABASE_URL=postgres://59b842f610992f350c99576c3c357e56588a3adec9d420290137e53611d9aca5:sk_U5rCfJW6B1A0t9w8nAdye@db.prisma.io:5432/?sslmode=require
+AUTH_SECRET=secret // run this on terminal `npx auth secret` to generate a auth secret
+```
+
+Next, after getting the database connection string, push your model to your database by running:
+
+```bash
+npx prisma generate
+npx prisma migrate dev // for development
+npx prisma migrate deploy // for production
+```
+
+Make sure you generate your model successfully into your database.
+
+Let’s get back to the auth options and add our prisma adapter.
+
+```js
+import { NextAuthOptions } from "next-auth"
+import bcrypt from "bcrypt"
+import { PrismaAdapter } from "@next-auth/prisma-adapter"
+import CredentialsProvider from "next-auth/providers/credentials"
+import { credentialsValidator } from "@/lib/validations/credentials"
+import db from "./db"
+
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(db),
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "email", type: "text" },
+        password: { label: "password", type: "password" },
+      },
+      async authorize(credentials) {
+        const cred = await credentialsValidator.parseAsync(credentials)
+        if (!cred.email || !cred?.password) {
+          throw new Error("Invalid Credentials")
+        }
+
+        const user = await db.user.findUnique({
+          where: {
+            email: cred.email,
+          },
+        })
+
+        if (!user || !user?.hashedPassword)
+          throw new Error("Invalid Credentials")
+
+        const isPasswordCorrect = await bcrypt.compare(
+          cred.password,
+          user.hashedPassword
+        )
+
+        if (!isPasswordCorrect) throw new Error("Invalid credentials")
+
+        return user
+      },
+    }),
+  ],
+  debug: process.env.NODE_ENV === "development",
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+}
+```
+
+create a `auth.ts` file in the `src/lib/server` folder to handle user registration and login credentials.
+
+```js
+import { signIn, signOut } from "@/auth"
+import {
+  type Credentials,
+  type Register,
+  credentialsValidator,
+  registerValidator,
+} from "@/lib/validations/credentials"
+import { AuthError } from "next-auth"
+import db from "@/lib/db"
+import { hashPassword } from "@/lib/auth/session"
+
+type Res =
+  | { success: true }
+  | { success: false; error: string; statusCode: 401 | 500 }
+
+export const login = async (values: Credentials): Promise<Res> => {
+  try {
+    const validatedFields = credentialsValidator.safeParse(values)
+
+    if (!validatedFields.success) {
+      return {
+        success: false,
+        statusCode: 401,
+        error: "Invalid Fields",
+      }
+    }
+
+    await signIn("credentials", { ...values, redirect: false })
+
+    return { success: true }
+  } catch (err) {
+    if (err instanceof AuthError) {
+      switch (err.type) {
+        case "CredentialsSignin":
+        case "CallbackRouteError":
+          return {
+            success: false,
+            error: "Invalid credentials",
+            statusCode: 401,
+          }
+        case "AccessDenied":
+          return {
+            success: false,
+            error:
+              "Please verify your email, sign up again to resend verification email",
+            statusCode: 401,
+          }
+        // custom error
+        case "OAuthAccountAlreadyLinked" as AuthError["type"]:
+          return {
+            success: false,
+            error: "Login with your Google or Github account",
+            statusCode: 401,
+          }
+        default:
+          return {
+            success: false,
+            error: "Oops. Something went wrong",
+            statusCode: 500,
+          }
+      }
+    }
+
+    console.error(err)
+    return { success: false, error: "Internal Server Error", statusCode: 500 }
+  }
+}
+
+// src/lib/server/auth.ts
+// Register
+
+export async function signUp(values: Register): Promise<Res> {
+  const validatedFields = registerValidator.safeParse(values)
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid Fields", statusCode: 401 }
+  }
+
+  const { email, password, confirmPassword } = validatedFields.data
+
+  try {
+    // Check if the user already exists
+    const existingUser = await db.user.findFirst({
+      where: {
+        email,
+      },
+    })
+
+  // If the user already exists, return an error
+    if (existingUser)
+      return {
+        statusCode: 401,
+        success: false,
+        error: "Email already exists",
+      }
+
+  // Check if the password and confirmPassword match
+    if (password !== confirmPassword) {
+      return { error: "Passwords don't match", success: false, statusCode: 401 }
+    }
+
+    // Hash the password
+    const passwordHash = await hashPassword(password)
+
+  // Create the user in the database
+    await db.user.create({
+      data: {
+        email,
+        hashedPassword: passwordHash,
+      },
+    })
+
+    return {
+      success: true,
+    }
+  } catch (err) {
+    console.error(err)
+    return { success: false, error: "Internal Server Error", statusCode: 500 }
+  }
+}
+
+```
+
+For our typesafe validation we'll be using [zod](https://zod.dev/)
+
+Let’s create a `credentials.ts` file in `src/lib/validations` folder and give validations.
+
+```js
+import * as z from "zod"
+
+export const credentialsValidator = z.object({
+  email: z.string().email(),
+  password: z.string(),
+})
+
+export const registerValidator = credentialsValidator.extend({
+  name: z.string().optional(),
+})
+
+export const Credentials = z.infer<typeof credentialsValidator>
+export const Register = z.infer<typeof registerValidator>
+```
+
+From now on, the adapter will handle authentication and automatically add new users, sessions, and accounts to the database.
+
+Let's move on to our frontend where we can input our data will be using shadcn ui components.
+
+Check out the [shadcn/ui](https://ui.shadcn.com/) for more information on how to use it.
+
+In your `app` folder, create a folder called `auth`. Inside the auth folder, create `login` and `register` folders. Inside each of those folders, create a `page.tsx` file. You can now design your authentication pages.
+
+The paths for our authentication are `/auth/login` and `/auth/register`.
+
+Create `sign-up.tsx` in your components folder. This will serve as our form for authentication.
+
+```js
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { signUp } from "@/server/auth"
+import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+  type Register,
+  registerValidator,
+} from "@/lib/validations/credentials"
+
+const Signup = () => {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const form = useForm<Register>({
+    resolver: zodResolver(registerValidator),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
+
+  const onSubmit = async (data: Register) => {
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const res = await signUp(data)
+
+      if (res.success) router.push("/login")
+      else {
+        console.log(res.error)
+        switch (res.statusCode) {
+          case 500:
+          default:
+            const error = res.error || "Internal Server Error"
+            setError(`Error: ${error}`)
+        }
+      }
+
+      setIsLoading(false)
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <div className="w-full max-w-md">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-6"
+          >
+            <div className="flex flex-col items-center gap-2 text-center">
+              <h1 className="text-2xl font-bold">Create your account</h1>
+              <p className="text-muted-foreground text-sm text-balance">
+                Enter your details below to create your account
+              </p>
+            </div>
+
+            <div className="grid gap-6">
+              {/* Email Field */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="m@example.com"
+                        type="email"
+                        autoComplete="email"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password Field */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Confirm Password Field */}
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Creating account..." : "Create account"}
+              </Button>
+            </div>
+            <div className="text-center text-sm">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="underline underline-offset-4">
+                Sign in
+              </Link>
+            </div>
+
+            {error && (
+              <div
+                className="text-destructive text-center text-sm"
+                aria-live="polite"
+              >
+                {error}
+              </div>
+            )}
+          </form>
+        </Form>
+      </div>
+    </div>
+  )
+}
+
+export default Signup
+```
+
+Create `login.tsx` in your components folder. This will be our form for authentication.
+
+```js
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { login } from "@/server/auth"
+import { useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+  signInInputSchema,
+  type SignInInput,
+} from "@/lib/validations/credentials"
+
+const Login = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const form = useForm<SignInInput>({
+    resolver: zodResolver(signInInputSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
+
+  const onSubmit = async (data: SignInInput) => {
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const res = await login(data)
+
+      if (res.success) window.location.href = "/"
+      else {
+        if (res.error) setError(res.error)
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <div className="w-full max-w-xs">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-6"
+          >
+            <div className="flex flex-col items-center gap-2 text-center">
+              <h1 className="text-2xl font-bold">Login to your account</h1>
+              <p className="text-muted-foreground text-sm text-balance">
+                Enter your email below to login to your account
+              </p>
+            </div>
+
+            <div className="grid gap-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="m@example.com"
+                        type="email"
+                        autoComplete="email"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <Link
+                        href="/forgot-password"
+                        className="text-muted-foreground hover:text-primary text-sm underline underline-offset-4"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <Input type="password" disabled={isLoading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
+
+              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-background text-muted-foreground relative z-10 px-2">
+                  Or continue with
+                </span>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                type="button"
+                disabled={isLoading}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="mr-2 h-4 w-4"
+                >
+                  <path
+                    d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                    fill="currentColor"
+                  />
+                </svg>
+                Login with GitHub
+              </Button>
+            </div>
+
+            <div className="text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className="underline underline-offset-4">
+                Sign up
+              </Link>
+            </div>
+
+            {error && (
+              <div
+                className="text-destructive text-center text-sm"
+                aria-live="polite"
+              >
+                {error}
+              </div>
+            )}
+          </form>
+        </Form>
+      </div>
+    </div>
+  )
+}
+
+export default Login
+
+```
+
+In your auth pages `/auth/login`, import `auth-form.tsx`. Make sure to change the props type of the `<AuthForm />` component.
+
+```js
+import Login from "@/components/login.tsx"
+
+import * as React from "react"
+
+const Login = () => {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <Login />
+    </div>
+  )
+}
+
+export default Login
+```
+
+In your register path `/auth/register`:
+
+```js
+import SignUp from "@/components/sign-up.tsx"
+
+import * as React from "react"
+
+const Register = () => {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <SignUp />
+    </div>
+  )
+}
+
+export default Register
+```
+
+Overall, NextAuth.js is a powerful tool for handling authentication in Next.js.
+
+You can learn more about NextAuth.js on the [Auth.js](https://authjs.dev/) docs.
+
+If you want to know more about how to use NextAuth.js in your Next.js application, this is a good place to start.

@@ -3,19 +3,19 @@
 import { Calendar, Clock } from "lucide-react"
 import React from "react"
 import { TypographyH3, TypographyP } from "../typography"
-import type { Blog } from "contentlayer/generated"
+import { type BlogPost } from "@/lib/blog"
 import { relativeDate } from "@/lib/date"
 import Link from "next/link"
 
 type BlogItemProps = {
-  blog: Blog
+  blog: BlogPost
 }
 
 const BlogItem: React.FC<BlogItemProps> = ({ blog }) => {
   return (
     <li className="relative -mx-4">
       <Link
-        href={blog.slug}
+        href={`/blog/${blog.slug}`}
         className="flex rounded-sm p-4 transition-colors hover:bg-accent"
       >
         <article className="flex flex-col gap-2 rounded-sm">
