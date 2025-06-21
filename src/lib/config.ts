@@ -21,7 +21,7 @@ import {
   SiSocketdotio,
   SiStyledcomponents,
   SiChakraui,
-  SiVisualstudiocode,
+  // SiVisualstudiocode,
   SiGnubash,
   SiGit,
   SiApollographql,
@@ -158,10 +158,10 @@ export const skillset = {
     },
   ],
   boost: [
-    {
-      name: "VSCode",
-      icon: SiVisualstudiocode,
-    },
+    // {
+    //   name: "VSCode",
+    //   icon: SiVisualstudiocode,
+    // },
     {
       name: "Git",
       icon: SiGit,

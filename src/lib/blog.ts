@@ -2,14 +2,42 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 
+export interface ReadingTime {
+  text: string
+  minutes: number
+  time: number
+  words: number
+}
+
 export interface BlogPost {
   id: string
   slug: string
+  slugAsParams: string
   title: string
   description: string
   date: string
   content: string
+  body: string
+  readingTime: ReadingTime
+  tags?: string[]
+  author?: string
+  published?: boolean
   [key: string]: any
+}
+
+// Calculate reading time for blog content
+function calculateReadingTime(content: string): ReadingTime {
+  const wordsPerMinute = 200
+  const words = content.trim().split(/\s+/).length
+  const minutes = Math.ceil(words / wordsPerMinute)
+  const time = minutes * 60 * 1000 // milliseconds
+
+  return {
+    text: `${minutes} min read`,
+    minutes,
+    time,
+    words,
+  }
 }
 
 export function getAllBlogs(): BlogPost[] {
@@ -36,11 +64,26 @@ export function getAllBlogs(): BlogPost[] {
       return {
         id: slug,
         slug,
+        slugAsParams: slug,
         content,
+        body: content, // Keep raw content for processing
+        readingTime: calculateReadingTime(content),
+        published: data.published ?? true, // Default to published
         ...data,
       } as BlogPost
     })
+    .filter((blog) => blog.published) // Only return published blogs
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return blogs
+}
+
+export function getBlogBySlug(slug: string): BlogPost | null {
+  const allBlogs = getAllBlogs()
+  return allBlogs.find((blog) => blog.slug === slug) || null
+}
+
+export function getAllBlogSlugs(): string[] {
+  const allBlogs = getAllBlogs()
+  return allBlogs.map((blog) => blog.slug)
 }

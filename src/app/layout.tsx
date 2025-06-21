@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site"
 import Footer from "@/components/site-footer"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/react"
+import { PersonJsonLd, WebsiteJsonLd } from "@/components/structured-data"
 // import { MDXProvider } from "@mdx-js/react"
 // import { useMDXComponents } from "@/mdx-components"
 
@@ -31,10 +32,34 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://benjoquilario.me"),
   description: siteConfig.description,
-  authors: {
-    name: siteConfig.username,
-  },
+  keywords: [
+    "Benjo Quilario",
+    "Frontend Developer",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "JavaScript",
+    "Web Development",
+    "Portfolio",
+    "Blog",
+    "Software Engineer",
+    "Philippines",
+    "TailwindCSS",
+    "Full Stack Developer",
+  ],
+  authors: [
+    {
+      name: siteConfig.username,
+      url: siteConfig.url,
+    },
+  ],
   creator: siteConfig.username,
+  publisher: siteConfig.name,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   robots: {
     index: true,
     follow: true,
@@ -53,14 +78,36 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: `${siteConfig.url}/og.jpeg`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.username,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    site: "@iam_benjo",
+    creator: "@iam_benjo",
+    images: [`${siteConfig.url}/og.jpeg`],
   },
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
+  manifest: "/manifest.json",
+  category: "technology",
+}
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 interface RootLayoutProps {
@@ -72,6 +119,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <PersonJsonLd />
+        <WebsiteJsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiase min-h-screen`}
       >
