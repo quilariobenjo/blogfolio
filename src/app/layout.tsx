@@ -8,6 +8,8 @@ import { siteConfig } from "@/config/site"
 import Footer from "@/components/site-footer"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/react"
+// import { MDXProvider } from "@mdx-js/react"
+// import { useMDXComponents } from "@/mdx-components"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  metadataBase: new URL("https://benjoquilario.site"),
+  metadataBase: new URL("https://benjoquilario.me"),
   description: siteConfig.description,
   authors: {
     name: siteConfig.username,
@@ -66,6 +68,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  // const components = useMDXComponents({})
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
