@@ -1,0 +1,125 @@
+---
+title: "Building a Modern Blog with Next.js and MDX"
+description: "Learn how to create a comprehensive blog system using Next.js, MDX, and TypeScript with proper SEO and performance optimization."
+date: "2025-01-21"
+author: "Your Name"
+tags: ["Next.js", "MDX", "TypeScript", "React", "Blog"]
+published: true
+---
+
+# Building a Modern Blog with Next.js and MDX
+
+Creating a blog with Next.js and MDX gives you the power of React components within your markdown content, making it perfect for technical blogs and documentation sites.
+
+## What is MDX?
+
+MDX is a format that lets you seamlessly write JSX in your markdown documents. This means you can:
+
+- Use React components in your markdown
+- Import and use custom components
+- Add interactive elements to your content
+- Maintain the simplicity of markdown for writing
+
+## Setting up the Project
+
+First, let's start with a Next.js project and add the necessary dependencies:
+
+```bash
+npx create-next-app@latest my-blog --typescript --tailwind --eslint
+cd my-blog
+npm install @next/mdx @mdx-js/loader @mdx-js/react gray-matter
+```
+
+### Project Structure
+
+Here's how we'll organize our blog:
+
+```
+src/
+├── app/
+│   ├── blog/
+│   │   ├── page.tsx
+│   │   └── [slug]/
+│   │       └── page.tsx
+├── components/
+│   └── mdx-components.tsx
+├── content/
+│   └── blog/
+│       ├── post-1.mdx
+│       └── post-2.mdx
+└── lib/
+    └── blog.ts
+```
+
+## Features We'll Implement
+
+### 1. Dynamic Routing
+
+Our blog will use Next.js dynamic routing to generate pages for each blog post automatically.
+
+### 2. Syntax Highlighting
+
+We'll add beautiful syntax highlighting for code blocks using rehype-pretty-code.
+
+### 3. Reading Time Calculation
+
+Automatically calculate and display estimated reading time for each post.
+
+### 4. SEO Optimization
+
+Generate proper metadata for each blog post to improve search engine visibility.
+
+## Code Example
+
+Here's how you can create a custom component for your MDX files:
+
+```tsx
+import { cn } from "@/lib/utils"
+
+interface CalloutProps {
+  type?: "info" | "warning" | "error"
+  children: React.ReactNode
+}
+
+export function Callout({ type = "info", children }: CalloutProps) {
+  return (
+    <div
+      className={cn("my-6 rounded-lg border p-4", {
+        "border-blue-200 bg-blue-50 text-blue-900": type === "info",
+        "border-yellow-200 bg-yellow-50 text-yellow-900": type === "warning",
+        "border-red-200 bg-red-50 text-red-900": type === "error",
+      })}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+## Best Practices
+
+> **Important**: Always validate your frontmatter data and handle edge cases gracefully.
+
+1. **Performance**: Use Next.js static generation for better performance
+2. **SEO**: Include proper meta tags and structured data
+3. **Accessibility**: Ensure your blog is accessible to all users
+4. **TypeScript**: Use TypeScript for better developer experience
+
+## Table Example
+
+| Feature             | Status         | Priority |
+| ------------------- | -------------- | -------- |
+| MDX Support         | ✅ Complete    | High     |
+| Syntax Highlighting | ✅ Complete    | High     |
+| Reading Time        | ✅ Complete    | Medium   |
+| Search              | 🚧 In Progress | Low      |
+
+## Conclusion
+
+Building a blog with Next.js and MDX provides a powerful foundation for content creation. The combination of markdown simplicity with React component flexibility makes it an excellent choice for technical blogs.
+
+Try implementing these features step by step, and you'll have a fully functional blog system that's both powerful and maintainable.
+
+---
+
+_Happy coding! 🚀_

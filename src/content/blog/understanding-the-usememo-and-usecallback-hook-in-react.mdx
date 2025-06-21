@@ -1,26 +1,29 @@
 ---
 title: Understanding the useMemo and useCallback hook in React
 description: A guide that explains how to use useMemo and useCallback hook when to used it and not to used it.
-date: 2023-09-25
+date: 2025-06-10
+author: "Benjo Quilario"
+tags: ["Hooks", "TypeScript", "React"]
+published: true
 ---
 
-## What is React Hooks
+## What are React Hooks?
 
 Hooks were added to React in version 16.8.
 
 Hooks allow function components to have access to state and other React features. Because of this, class components are generally no longer needed.
 
-Hooks make your work a lot easier and also to avoid a repetitive code over and over again.
+Hooks make your work a lot easier and help you avoid repetitive code.
 
-We're not going to discuss all react hooks but we're going to understand what `useMemo` and `useCallback` hooks and when to used it.
+We're not going to discuss all React hooks, but we're going to understand what `useMemo` and `useCallback` hooks are and when to use them.
 
 ### The useMemo Hook
 
-The `useMemo` hook is used to memoize a value that is `expensive to compute`. This means that the value is only computed when one of its `dependencies changes`. This can be useful for `optimizing the performance` of a component that needs to `perform a heavy computation` each time it renders.
+The `useMemo` hook is used to memoize a value that is `expensive to compute`. This means that the value is only computed when one of its `dependencies changes`. This can be useful for `optimizing the performance` of a component that needs to `perform heavy computations` each time it renders.
 
-We really have to understand `useMemo` hook and how it works and when to used it because if you don't use it when you should, it will trigger a performance problem and might have some bugs some unexpected behavior.
+We really need to understand the `useMemo` hook and how it works and when to use it, because if you don't use it when you should, it can trigger performance problems and might cause bugs or unexpected behavior.
 
-First, let talk about the problem of not using a `useMemo`.
+First, let's talk about the problem of not using `useMemo`.
 
 Take a look at this code and analyze it.
 
@@ -29,13 +32,13 @@ import { useState } from "react"
 
 const initialItems = new Array(29_999_999)
   .fill(0)
-  .map((_, index) => ({ id: index, isSelected: index === 29_999_999 }))
+  .map((_, index) => ({ id: index, isSelected: index === 29_999_998 }))
 
 const Component = () => {
   const [count, setCount] = useState(0)
   const [items] = useState(initialItems)
 
-  const selectedItem = item.find((item) => item.isSelected)
+  const selectedItem = items.find((item) => item.isSelected)
 
   return (
     <div>
@@ -47,43 +50,40 @@ const Component = () => {
 }
 ```
 
-As you can see above of the code we import useState from react and create a initialItems with value of (29_999_999) times and array elements in fill of 0 then we map it then return of object value of id and isSelected.
-isSelected is a boolean value only will it true when the index of array is equal to length of 29_999_999.
+As you can see in the code above, we import `useState` from React and create `initialItems` with an array of 29,999,999 elements filled with 0, then we map over it and return an object with `id` and `isSelected` properties. The `isSelected` property is a boolean value that will only be `true` when the index equals 29,999,998 (the last item).
 
-It looks like a normal nothing wrong declare useState pass initialItems as initialState and count and setCount with value of 0
-but if you run this code in react application it will cause a problem, try it in your application and try to `spam` by clicking the increment button the Count: `count` is skipping number.
+It looks normal - nothing seems wrong. We declare `useState`, pass `initialItems` as the initial state, and have `count` and `setCount` with an initial value of 0. But if you run this code in a React application, it will cause problems. Try it in your application and try to "spam" the increment button - you'll notice the `Count` is skipping numbers.
 
-This is wrong and i'ts not a `performant application` should look like, so what is the problem?.
+This is wrong and not how a `performant application` should behave. So what's the problem?
 
-We need to look at our components and understand how react works under the hood and how react treats state updates and how it renders the components.
+We need to look at our component and understand how React works under the hood, how React treats state updates, and how it renders components.
 
-In our components we have a `count`, `items` and `selectedItem` if we click the button all we're doing is we are calling the function in onClick and increment the count.
+In our component, we have `count`, `items`, and `selectedItem`. When we click the button, all we're doing is calling the function in `onClick` and incrementing the count.
 
-We need to understand that to update state means you have to trigger a re-render of the entire components.
+We need to understand that updating state means you have to trigger a re-render of the entire component.
 
-The problem is that the `selectedItem` triggering our performance issues if you look of what it does takes the `item` the goes in the array of items to `find` the item `isSelected` but if we take a look at `initialItems` the only thing that make the isSelected value is that to has go throught 29 millions item before isSelected value make true then will return that value
-and this is very expensive operations.
+The problem is that `selectedItem` is triggering our performance issues. If you look at what it does: it takes the `items` array and goes through the entire array to `find` the item where `isSelected` is true. But if we look at `initialItems`, the only item that has `isSelected` set to `true` is the last one, so it has to go through 29 million items before finding the selected item and returning that value. This is a very expensive operation.
 
-Because we are changing the count we are triggering the components to re-render and causing our selectedItem to recalculated every time the count changes. It causing a huge performance issue we're doing some unnecessery computations on every render.
+Because we are changing the `count`, we are triggering the component to re-render and causing our `selectedItem` to be recalculated every time the count changes. This causes a huge performance issue - we're doing unnecessary computations on every render.
 
-This is will `useMemo` comes to play.
+This is where `useMemo` comes into play.
 
-Do we really need to `useMemo` on items if the items still the same No? because it still the same no matter what happen but if we take a look at our component `selectedItem` there's no way the selectedItem still the same.
+Do we really need to use `useMemo` on `items`? If the `items` array stays the same, then no, because it remains the same no matter what happens. But if we look at our component, `selectedItem` is being recalculated unnecessarily.
 
 ```jsx
 import { useState, useMemo } from "react"
 
 const initialItems = new Array(29_999_999)
   .fill(0)
-  .map((_, index) => ({ id: index, isSelected: index === 29_999_999 }))
+  .map((_, index) => ({ id: index, isSelected: index === 29_999_998 }))
 
 const Component = () => {
   const [count, setCount] = useState(0)
   const [items] = useState(initialItems)
 
   const selectedItem = useMemo(
-    item.find((item) => item.isSelected),
-    [item]
+    () => items.find((item) => item.isSelected),
+    [items]
   )
 
   return (
@@ -96,9 +96,227 @@ const Component = () => {
 }
 ```
 
-If the items in dependencies array in `useMemo` the selectedItem will re-renders.
+Now, `selectedItem` will only be recalculated if the `items` dependency in the `useMemo` dependency array changes.
 
-Now go back to our applications take a look and try to spam the increment button you will see the difference of the two when we're not using `useMemo` hook.
-No lag, skipping numbers and it's super efficient.
+Go back to your application and try to spam the increment button. You'll see the difference between the two approaches - when we're not using the `useMemo` hook, there's lag and skipping numbers. With `useMemo`, there's no lag, no skipping numbers, and it's super efficient.
 
 ### The useCallback Hook
+
+The `useCallback` hook is used to memoize a function. This means that the function is only recreated when one of its dependencies changes. This can be useful for optimizing the performance of a component that passes functions as props to child components.
+
+Let's first understand the problem of not using `useCallback`.
+
+#### The Problem: Function Recreation on Every Render
+
+Take a look at this code and analyze it:
+
+```jsx
+import { useState } from "react"
+
+const ExpensiveChildComponent = ({ onClick, items }) => {
+  console.log("ExpensiveChildComponent rendered")
+
+  // Simulate expensive computation
+  const processedItems = items.map((item) => ({
+    ...item,
+    processed: true,
+    timestamp: Date.now(),
+  }))
+
+  return (
+    <div>
+      <h3>Processed Items: {processedItems.length}</h3>
+      <button onClick={onClick}>Click me</button>
+    </div>
+  )
+}
+
+const ParentComponent = () => {
+  const [count, setCount] = useState(0)
+  const [items] = useState([
+    { id: 1, name: "Item 1" },
+    { id: 2, name: "Item 2" },
+    { id: 3, name: "Item 3" },
+  ])
+
+  // This function is recreated on every render
+  const handleClick = () => {
+    console.log("Button clicked!")
+  }
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <ExpensiveChildComponent onClick={handleClick} items={items} />
+    </div>
+  )
+}
+```
+
+In this example, every time the `count` state changes and the `ParentComponent` re-renders, a new `handleClick` function is created. Even though the function does exactly the same thing, React sees it as a different function because it's a new reference.
+
+This causes the `ExpensiveChildComponent` to re-render unnecessarily because it receives a "new" `onClick` prop every time, even though the function's behavior hasn't changed.
+
+You'll notice in the console that "ExpensiveChildComponent rendered" is logged every time you click the increment button, even though the `items` prop hasn't changed and the `onClick` function does the same thing.
+
+#### The Solution: Using useCallback
+
+```jsx
+import { useState, useCallback } from "react"
+
+const ExpensiveChildComponent = ({ onClick, items }) => {
+  console.log("ExpensiveChildComponent rendered")
+
+  // Simulate expensive computation
+  const processedItems = items.map((item) => ({
+    ...item,
+    processed: true,
+    timestamp: Date.now(),
+  }))
+
+  return (
+    <div>
+      <h3>Processed Items: {processedItems.length}</h3>
+      <button onClick={onClick}>Click me</button>
+    </div>
+  )
+}
+
+const ParentComponent = () => {
+  const [count, setCount] = useState(0)
+  const [items] = useState([
+    { id: 1, name: "Item 1" },
+    { id: 2, name: "Item 2" },
+    { id: 3, name: "Item 3" },
+  ])
+
+  // This function is memoized and only recreated if dependencies change
+  const handleClick = useCallback(() => {
+    console.log("Button clicked!")
+  }, []) // Empty dependency array means this function never changes
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <ExpensiveChildComponent onClick={handleClick} items={items} />
+    </div>
+  )
+}
+```
+
+Now, `handleClick` is memoized using `useCallback`. Since the dependency array is empty `[]`, the function reference never changes. This means `ExpensiveChildComponent` won't re-render when the `count` changes, because its props (`onClick` and `items`) remain the same.
+
+#### When useCallback Dependencies Matter
+
+Here's an example where the callback depends on state:
+
+```jsx
+import { useState, useCallback } from "react"
+
+const TodoList = ({ todos, onToggle }) => {
+  console.log("TodoList rendered")
+
+  return (
+    <ul>
+      {todos.map((todo) => (
+        <li key={todo.id}>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => onToggle(todo.id)}
+          />
+          {todo.text}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const TodoApp = () => {
+  const [todos, setTodos] = useState([
+    { id: 1, text: "Learn React", completed: false },
+    { id: 2, text: "Master useCallback", completed: false },
+  ])
+  const [filter, setFilter] = useState("all")
+
+  // This callback depends on the current todos state
+  const handleToggle = useCallback((id) => {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    )
+  }, []) // We can use empty deps because we use the functional update form
+
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "completed") return todo.completed
+    if (filter === "active") return !todo.completed
+    return true
+  })
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("active")}>Active</button>
+        <button onClick={() => setFilter("completed")}>Completed</button>
+      </div>
+      <TodoList todos={filteredTodos} onToggle={handleToggle} />
+    </div>
+  )
+}
+```
+
+In this example, even when the `filter` changes and causes a re-render, the `TodoList` component won't re-render unnecessarily because the `handleToggle` function reference remains stable.
+
+#### Key Points About useCallback:
+
+1. **Use it when passing functions as props** to child components that are expensive to render
+2. **The dependency array matters** - include any values from component scope that the function uses
+3. **Don't overuse it** - it has its own overhead, so only use it when you have a performance problem
+4. **Combine with React.memo** on child components for maximum effectiveness
+
+```jsx
+import React from "react"
+
+const ExpensiveChildComponent = React.memo(({ onClick, items }) => {
+  console.log("ExpensiveChildComponent rendered")
+
+  // Expensive computation here...
+
+  return <div>{/* Component JSX */}</div>
+})
+```
+
+By wrapping the child component with `React.memo`, it will only re-render when its props actually change, making the `useCallback` optimization effective.
+
+## Conclusion
+
+Understanding `useMemo` and `useCallback` is crucial for building performant React applications. Here are the key takeaways:
+
+### When to use useMemo:
+
+- ✅ For expensive calculations that depend on specific values
+- ✅ When creating objects or arrays that are passed as props
+- ✅ When the computation is truly expensive (like processing large datasets)
+- ❌ Don't use it for simple calculations or primitive values
+- ❌ Don't use it everywhere - it has its own overhead
+
+### When to use useCallback:
+
+- ✅ When passing functions as props to child components
+- ✅ When the child component is wrapped with `React.memo`
+- ✅ When functions are dependencies of other hooks
+- ❌ Don't use it for functions that don't get passed as props
+- ❌ Don't use it if the dependencies change frequently
+
+### Best Practices:
+
+1. **Profile first** - Use React DevTools Profiler to identify actual performance bottlenecks
+2. **Measure the impact** - Don't optimize prematurely
+3. **Combine optimizations** - Use `React.memo` with `useCallback` for maximum effectiveness
+4. **Keep dependency arrays accurate** - Include all values from component scope that are used
+
+Remember, these hooks are optimization tools. Use them when you have identified actual performance problems, not as a default solution for every function or calculation in your components.
