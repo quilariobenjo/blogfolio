@@ -14,74 +14,56 @@ import {
 } from "react-icons/si"
 import { ExternalLink } from "lucide-react"
 import { Badge } from "./ui/badge"
+import { Button } from "./ui/button"
 
-const techIcon = [
-  {
-    techName: "JavaScript",
-    icon: SiJavascript,
-  },
-  {
-    techName: "TypeScript",
-    icon: SiTypescript,
-  },
-  {
-    techName: "HTLM5",
-    icon: SiHtml5,
-  },
-  {
-    techName: "CSS3",
-    icon: SiCss3,
-  },
-  {
-    techName: "React",
-    icon: SiReact,
-  },
-  {
-    techName: "NextJs",
-    icon: SiNextdotjs,
-  },
-  {
-    techName: "NodeJS",
-    icon: SiNodedotjs,
-  },
-  {
-    techName: "Tailwind",
-    icon: SiTailwindcss,
-  },
-  {
-    techName: "PostgreSQL",
-    icon: SiPostgresql,
-  },
-]
+const CORE_TECHNOLOGIES = [
+  { name: "JavaScript", icon: SiJavascript },
+  { name: "TypeScript", icon: SiTypescript },
+  { name: "HTML5", icon: SiHtml5 },
+  { name: "CSS3", icon: SiCss3 },
+  { name: "React", icon: SiReact },
+  { name: "Next.js", icon: SiNextdotjs },
+  { name: "Node.js", icon: SiNodedotjs },
+  { name: "Tailwind CSS", icon: SiTailwindcss },
+  { name: "PostgreSQL", icon: SiPostgresql },
+] as const
 
-type TechProps = {
-  isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
+interface TechProps {
+  onShowFullSkills: () => void
 }
 
-const Tech: React.FC<TechProps> = ({ isOpen, setIsOpen }) => {
+const Tech: React.FC<TechProps> = ({ onShowFullSkills }) => {
   return (
-    <div className="mt-4 flex w-full flex-col">
-      <h4 className="mb-4 scroll-m-20 font-heading font-medium tracking-tight md:text-lg">
-        Here are few technologies that are cup of my tea coffee .
-      </h4>
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap gap-1">
-          {techIcon.map((icon) => (
-            <Badge key={icon.techName}>{icon.techName}</Badge>
+    <section className="mt-6 space-y-4">
+      <header>
+        <h4 className="font-heading scroll-m-20 text-lg font-medium tracking-tight">
+          Here are a few technologies that are my cup of tea ☕
+        </h4>
+      </header>
+
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {CORE_TECHNOLOGIES.map((tech) => (
+            <Badge
+              key={tech.name}
+              variant="secondary"
+              className="text-xs font-medium"
+            >
+              {tech.name}
+            </Badge>
           ))}
         </div>
-        <div className="my-3 flex items-start justify-start">
-          <button
-            className="flex items-center text-sm active:scale-[.98]"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            See my full arsenal
-            <ExternalLink className="ml-1 h-4 w-4" />
-          </button>
-        </div>
+
+        <Button
+          variant="link"
+          onClick={onShowFullSkills}
+          className="text-muted-foreground hover:text-foreground h-auto p-0 text-sm font-normal transition-colors"
+        >
+          See my full arsenal
+          <ExternalLink className="ml-1 h-4 w-4" />
+        </Button>
       </div>
-    </div>
+    </section>
   )
 }
 

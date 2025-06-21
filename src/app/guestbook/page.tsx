@@ -3,7 +3,7 @@ import db from "@/lib/db"
 import { TypographyH2 } from "@/components/typography"
 import React, { Suspense } from "react"
 import { SignIn, SignOut } from "./buttons"
-import { getSession } from "@/lib/session"
+import { auth } from "@/auth"
 import FormEntry from "./form"
 import { lowerCaseName } from "@/lib/utils"
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ async function getGuestBook() {
 }
 
 export default async function GuestBook() {
-  const session = await getSession()
+  const session = await auth()
 
   return (
     <div className="space-y-4">
@@ -61,7 +61,7 @@ const Entries = async () => {
         {!entries && <>Nothing, try sending one...</>}
         {entries?.map((entry: any) => (
           <div className="w-full break-words" key={entry.id}>
-            <span className="mr-1 text-muted-foreground">
+            <span className="text-muted-foreground mr-1">
               {lowerCaseName(entry.created_by)}:
             </span>
             {entry.body}

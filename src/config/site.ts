@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
   description: "23 y/o Frontend Developer based in Philippines",
   username: "benjoquilario",
   email: "benjoquilario@gmail.com",
-  url: "https://benjoquilario.site",
+  url: "https://benjoquilario.me",
   ogImage: "https://avatars.githubusercontent.com/u/82529126?v=4",
   mainNav: [
     {

@@ -6,7 +6,7 @@ export const REPOS = [
   "animehi-stream",
   "next-insider",
   "chatup",
-  "benjoquilario.site",
+  "furniture-jmq",
   "just-work",
   "bq-player",
 ]
