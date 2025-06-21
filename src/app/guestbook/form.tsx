@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { saveGuestbookEntry } from "@/app/actions"
 import React, { useEffect } from "react"
-import { useSession } from "next-auth/react"
 
 const guestBookSchema = z.object({
   entry: z.string().min(1, { message: "Message must be atleast 1 character." }),

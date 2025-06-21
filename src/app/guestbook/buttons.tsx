@@ -3,7 +3,7 @@
 import { GithubIcon as Github } from "lucide-react"
 import { FaGoogle } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
-import { signIn, signOut } from "next-auth/react"
+import { signIn, signOut } from "@/auth"
 
 export function SignOut() {
   return (

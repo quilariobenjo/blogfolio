@@ -1,12 +1,9 @@
 "use server"
 
 import { kv } from "@vercel/kv"
-import * as z from "zod"
 import { Ratelimit } from "@upstash/ratelimit"
-import { type Session } from "next-auth"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { headers } from "next/headers"
-import { getSession } from "@/lib/session"
+import { auth } from "@/auth"
 import { session as sessionAuth } from "@/lib/validations/session"
 import { env } from "@/env.mjs"
 import db from "@/lib/db"
@@ -70,7 +67,7 @@ export async function sendEmail({
 }
 
 export async function saveGuestbookEntry(entry: string) {
-  const session = await getSession()
+  const session = await auth()
   const sessionValidations = sessionAuth.parse(session?.user)
 
   const email = sessionValidations?.email
