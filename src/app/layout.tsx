@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { PersonJsonLd, WebsiteJsonLd } from "@/components/structured-data"
 // import { MDXProvider } from "@mdx-js/react"
 // import { useMDXComponents } from "@/mdx-components"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -135,6 +136,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Toaster />
           <TailwindIndicator />
           <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
