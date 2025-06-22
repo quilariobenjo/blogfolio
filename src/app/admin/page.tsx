@@ -1,51 +1,90 @@
-import { getSession } from "@/lib/session"
+import { auth } from "@/auth"
 import { notFound, redirect } from "next/navigation"
-import db from "@/lib/db"
+import { db } from "@/database"
 import { revalidatePath } from "next/cache"
 import { Button } from "@/components/ui/button"
+import { guestEntries } from "@/database/schema/guest-entries"
+import { eq } from "drizzle-orm"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const Admin = async () => {
-  const session = await getSession()
+  const session = await auth()
 
   if (!session) redirect("/")
 
   if (session?.user?.email !== "benjoquilario@gmail.com") notFound()
 
-  const guestbookEntries = await db.bookEntry.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+  const guestbookEntries = await db.query.guestEntries.findMany({
+    orderBy: (guestEntries, { desc }) => desc(guestEntries.createdAt),
   })
 
-  return <div className="space-y-4">
-    {guestbookEntries.map((entry: any) => (
-      <div
-        key={entry.id}
-        className="flex w-full justify-between break-words text-sm hover:bg-muted"
+  const emails = await db.query.emailSent.findMany({
+    orderBy: (emailSent, { desc }) => desc(emailSent.sentAt),
+  })
+
+  return (
+    <div className="space-y-4">
+      <Button
+        onClick={async () => {
+          "use server"
+          revalidatePath("/admin")
+        }}
       >
-        <div>
-          <span className="text-muted-foreground">{entry.created_by}</span> :{" "}
-          {entry.body}
-        </div>
-        <form
-          className="ml-10 inline-flex"
-          action={async () => {
-            "use server";
-            await db.bookEntry.delete({
-              where: {
-                id: entry.id,
-              },
-            })
-            revalidatePath("/admin");
-            revalidatePath("/guestbook");
-          }}
-        >
-          <Button type="submit">
-            Delete
-          </Button>
-        </form>
-      </div>
-    ))}
-  </div>
+        Refresh
+      </Button>
+      <Tabs defaultValue="guestbook" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="guestbook">Guestbook</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+        <TabsContent value="guestbook">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Guestbook Entries</h1>
+          </div>
+
+          {guestbookEntries.map((entry) => (
+            <div
+              key={entry.id}
+              className="hover:bg-muted flex w-full justify-between break-words text-sm"
+            >
+              <div>
+                <span className="text-muted-foreground">{entry.createdBy}</span>{" "}
+                : {entry.body}
+              </div>
+              <form
+                className="ml-10 inline-flex"
+                action={async () => {
+                  "use server"
+                  await db
+                    .select()
+                    .from(guestEntries)
+                    .where(eq(guestEntries.id, entry.id))
+                    .limit(1)
+                  revalidatePath("/admin")
+                  revalidatePath("/guestbook")
+                }}
+              >
+                <Button type="submit">Delete</Button>
+              </form>
+            </div>
+          ))}
+        </TabsContent>
+        <TabsContent value="emails">
+          <h1 className="text-2xl font-bold">Emails</h1>
+          {emails.map((email) => (
+            <div
+              key={email.id}
+              className="hover:bg-muted flex w-full justify-between break-words text-sm"
+            >
+              <div>
+                <span className="text-muted-foreground">{email.email}</span> :{" "}
+                {email.body}
+              </div>
+            </div>
+          ))}
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
 }
 export default Admin
