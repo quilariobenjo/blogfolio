@@ -16,7 +16,7 @@ import { ExternalLink } from "lucide-react"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 
-const CORE_TECHNOLOGIES = [
+export const CORE_TECHNOLOGIES = [
   { name: "JavaScript", icon: SiJavascript },
   { name: "TypeScript", icon: SiTypescript },
   { name: "HTML5", icon: SiHtml5 },
