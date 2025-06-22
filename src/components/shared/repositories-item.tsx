@@ -2,6 +2,9 @@ import { Book, GitFork, Star, ExternalLink } from "lucide-react"
 import React from "react"
 import { Badge } from "@/components/ui/badge"
 import { TypographyH3, TypographyP } from "@/components/typography"
+import Link from "next/link"
+import { Button } from "../ui/button"
+import { ExternalLinkButton, FloatingAction } from "./external-link"
 
 // Type definitions for better type safety
 interface GitHubRepository {
@@ -31,7 +34,7 @@ async function getRepos(repo: string): Promise<GitHubRepository> {
           "User-Agent": "benjoquilario-portfolio",
         },
         next: {
-          revalidate: 3600, // Cache for 1 hour instead of 1 minute for better performance
+          revalidate: 3600, // Cache for 1 hour
           tags: [`repo-${repo}`], // Add cache tags for selective revalidation
         },
       }
@@ -87,43 +90,6 @@ const RepositoryStats = ({
       <span>{forks.toLocaleString()}</span>
     </div>
   </div>
-)
-
-const ExternalLinkButton = ({
-  href,
-  label,
-}: {
-  href: string | null
-  label: string
-}) => {
-  if (!href) return null
-
-  return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={href}
-      aria-label={label}
-      className="text-foreground/80 hover:text-foreground focus:text-foreground focus:ring-ring mt-2 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
-    >
-      <ExternalLink className="h-4 w-4" />
-      <span className="truncate text-sm">{href}</span>
-    </a>
-  )
-}
-
-const FloatingAction = ({ url, label }: { url: string; label: string }) => (
-  <span className="absolute right-0 top-0 z-50 flex h-8 w-8 -translate-y-1/4 items-center justify-center rounded-full opacity-0 transition-all group-hover:-translate-y-1/3 group-hover:opacity-100">
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={url}
-      aria-label={label}
-      className="bg-foreground text-primary-foreground hover:bg-foreground/90 focus:bg-foreground/90 focus:ring-ring h-8 rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
-    >
-      <ExternalLink className="h-4 w-4" />
-    </a>
-  </span>
 )
 
 export default async function RepositoriesItem({
@@ -183,16 +149,18 @@ export default async function RepositoriesItem({
               forks={repository.forks_count}
             />
 
-            <ExternalLinkButton
-              href={repository.homepage}
-              label={`Visit ${repository.name} homepage`}
-            />
+            {repository.homepage && (
+              <ExternalLinkButton
+                href={primaryUrl}
+                label={`Visit ${repository.name} homepage`}
+              />
+            )}
           </article>
         </div>
 
         <FloatingAction
-          url={primaryUrl}
-          label={`Open ${repository.name} repository`}
+          url={`/projects/${repoName}`}
+          label={`Visit ${repository.name} on GitHub`}
         />
       </li>
     )
