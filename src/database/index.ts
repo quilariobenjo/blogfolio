@@ -1,7 +1,10 @@
 import { env } from "@/env.mjs"
-import { drizzle } from "drizzle-orm/postgres-js"
-import postgres from "postgres"
+import { neon } from "@neondatabase/serverless"
+import { drizzle } from "drizzle-orm/neon-http"
 import * as schema from "./schema"
 
-const connection = postgres(env.DATABASE_URL)
-export const db = drizzle(connection, { schema })
+const connection = neon(env.DATABASE_URL)
+export const db = drizzle({
+  client: connection,
+  schema,
+})
