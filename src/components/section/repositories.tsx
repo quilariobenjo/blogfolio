@@ -12,20 +12,23 @@ const Repositories = () => {
         <span className="text-4xl">F</span>
         eatured <span className="text-4xl">R</span>epositories
       </TypographyH2>
+      <p className="text-muted-foreground/80 text-xs">
+        Click a project to view more detailed information.
+      </p>
       <ul className="mx-0 mt-6 grid w-full grid-cols-1 gap-2.5 md:-mx-4 md:grid-cols-2">
-        {REPOS.map((repo) => (
-          <React.Suspense key={repo} fallback={<RepositorySkeleton />}>
-            <RepositoriesItem key={repo} repoName={repo} />
-          </React.Suspense>
-        ))}
         <Repository
           name="Horfi"
           description="House of Refuge Foundation, a non-profit organization that provides shelter and support to children who have lost their homes."
           topics={["non-profit", "charity", "children", "shelter"]}
           language="TypeScript"
           isPrivate={true}
-          hasExternalLink={false}
+          hasExternalLink={true}
         />
+        {REPOS.map((repo) => (
+          <React.Suspense key={repo} fallback={<RepositorySkeleton />}>
+            <RepositoriesItem key={repo} repoName={repo} />
+          </React.Suspense>
+        ))}
       </ul>
     </section>
   )

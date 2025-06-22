@@ -5,6 +5,7 @@ import { TypographyH3, TypographyP } from "@/components/typography"
 import Link from "next/link"
 import { Button } from "../ui/button"
 import { ExternalLinkButton, FloatingAction } from "./external-link"
+import { env } from "@/env.mjs"
 
 // Type definitions for better type safety
 interface GitHubRepository {
@@ -104,64 +105,66 @@ export default async function RepositoriesItem({
 
     return (
       <li className="group relative -mx-4 md:-mx-0">
-        <div className="group-hover:bg-accent flex rounded-sm p-4 transition-colors">
-          <article className="flex w-full flex-col gap-2 rounded-sm">
-            <header className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Book
-                  className="text-muted-foreground h-6 w-6 shrink-0"
-                  aria-hidden="true"
-                />
-                <TypographyH3 className="text-base font-bold lowercase md:text-lg">
-                  {repository.name}
-                </TypographyH3>
-              </div>
-            </header>
+        <Link href={`/projects/${repoName}`} className="block">
+          <div className="group-hover:bg-accent flex rounded-sm p-4 transition-colors">
+            <article className="flex w-full flex-col gap-2 rounded-sm">
+              <header className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Book
+                    className="text-muted-foreground h-6 w-6 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <TypographyH3 className="text-base font-bold lowercase md:text-lg">
+                    {repository.name}
+                  </TypographyH3>
+                </div>
+              </header>
 
-            {repository.description && (
-              <TypographyP className="text-foreground/90 mt-2 line-clamp-3 text-[13px] leading-7 md:text-[14px]">
-                {repository.description}
-              </TypographyP>
-            )}
+              {repository.description && (
+                <TypographyP className="text-foreground/90 mt-2 line-clamp-3 text-[13px] leading-7 md:text-[14px]">
+                  {repository.description}
+                </TypographyP>
+              )}
 
-            {repository.topics.length > 0 && (
-              <div
-                className="flex flex-wrap gap-1"
-                role="list"
-                aria-label="Repository topics"
-              >
-                {repository.topics.slice(0, 5).map((topic) => (
-                  <Badge key={topic} variant="outline" className="text-xs">
-                    {topic}
-                  </Badge>
-                ))}
-                {repository.topics.length > 5 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{repository.topics.length - 5} more
-                  </Badge>
-                )}
-              </div>
-            )}
+              {repository.topics.length > 0 && (
+                <div
+                  className="flex flex-wrap gap-1"
+                  role="list"
+                  aria-label="Repository topics"
+                >
+                  {repository.topics.slice(0, 5).map((topic) => (
+                    <Badge key={topic} variant="outline" className="text-xs">
+                      {topic}
+                    </Badge>
+                  ))}
+                  {repository.topics.length > 5 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{repository.topics.length - 5} more
+                    </Badge>
+                  )}
+                </div>
+              )}
 
-            <RepositoryStats
-              language={repository.language}
-              stars={repository.stargazers_count}
-              forks={repository.forks_count}
-            />
-
-            {repository.homepage && (
-              <ExternalLinkButton
-                href={primaryUrl}
-                label={`Visit ${repository.name} homepage`}
+              <RepositoryStats
+                language={repository.language}
+                stars={repository.stargazers_count}
+                forks={repository.forks_count}
               />
-            )}
-          </article>
-        </div>
 
-        <FloatingAction
-          url={`/projects/${repoName}`}
-          label={`Visit ${repository.name} on GitHub`}
-        />
+              {/* {repository.homepage && ( */}
+              {/* <ExternalLinkButton
+              href={`${env.NEXT_PUBLIC_APP_URL}projects/${repoName}`}
+              label={`${env.NEXT_PUBLIC_APP_URL}projects/${repoName}`}
+            /> */}
+              {/* )} */}
+            </article>
+          </div>
+
+          {/* <FloatingAction
+            url={`/projects/${repoName}`}
+            label={`Visit ${repository.name} on GitHub`}
+          /> */}
+        </Link>
       </li>
     )
   } catch (error) {

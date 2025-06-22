@@ -2,6 +2,7 @@
 
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
+import { env } from "@/env.mjs"
 
 export const ExternalLinkButton = ({
   href,
@@ -14,12 +15,12 @@ export const ExternalLinkButton = ({
 
   return (
     <Link
-      href={href}
+      href={`https://${env.NEXT_PUBLIC_APP_URL}projects/${label}`}
       className="text-foreground/80 hover:text-foreground focus:text-foreground focus:ring-ring mt-2 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
       aria-label={label}
     >
       <ExternalLink className="h-4 w-4" />
-      <span className="truncate text-sm">{href}</span>
+      <span className="truncate text-sm">{label}</span>
     </Link>
   )
 }
