@@ -9,9 +9,8 @@ import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { env } from "@/env.mjs"
-import { getAllBlogs, getBlogBySlug, getAllBlogSlugs } from "@/lib/blog"
+import { getBlogBySlug, getAllBlogSlugs } from "@/lib/blog"
 import { getRelatedBlogs } from "@/lib/blog-tags"
-import remarkGfm from "remark-gfm"
 
 interface BlogProps {
   params: Promise<{

@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 
+import { calculateReadingTime } from "./utils"
 export interface ReadingTime {
   text: string
   minutes: number
@@ -26,19 +27,6 @@ export interface BlogPost {
 }
 
 // Calculate reading time for blog content
-function calculateReadingTime(content: string): ReadingTime {
-  const wordsPerMinute = 200
-  const words = content.trim().split(/\s+/).length
-  const minutes = Math.ceil(words / wordsPerMinute)
-  const time = minutes * 60 * 1000 // milliseconds
-
-  return {
-    text: `${minutes} min read`,
-    minutes,
-    time,
-    words,
-  }
-}
 
 export function getAllBlogs(): BlogPost[] {
   // This function should only run on the server
