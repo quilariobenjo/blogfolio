@@ -6,12 +6,13 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { auth } from "@/auth"
 import { session as sessionAuth } from "@/lib/validations/session"
 import { env } from "@/env.mjs"
-import db from "@/lib/db"
+import { db } from "@/database"
 
 import {
   CreateEmailOptions,
   CreateEmailResponse,
 } from "resend/build/src/emails/interfaces"
+import { emailSent } from "@/database/schema"
 
 export async function sendMail(options: CreateEmailOptions) {
   const data = await fetch("https://api.resend.com/emails", {
@@ -55,7 +56,7 @@ export async function sendEmail({
     }
   }
 
-  if (process.env.NODE_ENV === "production")
+  if (process.env.NODE_ENV === "production") {
     await sendMail({
       from: `${action}@benjoquilario.site`,
       to: "benjoquilario@gmail.com",
@@ -63,49 +64,12 @@ export async function sendEmail({
       html: `<p>Email: ${emailAddress}</p><p>Message: ${body}</p>`,
     })
 
-  return { ok: true, data: "Thank you for your message!" }
-}
-
-export async function saveGuestbookEntry(entry: string) {
-  const session = await auth()
-  const sessionValidations = sessionAuth.parse(session?.user)
-
-  const email = sessionValidations?.email
-  const created_by = sessionValidations?.name
-  const body = entry.slice(0, 500)
-
-  const ratelimit = new Ratelimit({
-    redis: kv,
-    limiter: Ratelimit.fixedWindow(2, "1 m"),
-  })
-
-  const { success, reset } = await ratelimit.limit(email)
-
-  if (!success) {
-    const retryAfterSeconds = Math.ceil((reset - Date.now()) / 1000)
-    return {
-      ok: false,
-      data: `Try again in ${retryAfterSeconds} seconds!`,
-    }
-  }
-
-  await db.bookEntry.create({
-    data: {
-      body,
-      created_by,
-      email,
-    },
-  })
-
-  revalidatePath("/guestbook")
-
-  if (process.env.NODE_ENV === "production")
-    await sendMail({
-      from: "guestbook@benjoquilario.site",
-      to: "benjoquilario@gmail.com",
-      subject: "New Guestbook Entry",
-      html: `<p>Email: ${email}</p><p>Message: ${body}</p>`,
+    await db.insert(emailSent).values({
+      email: emailAddress,
+      subject: `${messageBy} message you!`,
+      body: `<p>Email: ${emailAddress}</p><p>Message: ${body}</p>`,
     })
+  }
 
   return { ok: true, data: "Thank you for your message!" }
 }
