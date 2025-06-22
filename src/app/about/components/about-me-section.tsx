@@ -22,9 +22,21 @@ const AboutMeSection: React.FC = () => {
         </TypographyP>
 
         <TypographyP className="text-foreground/90">
-          I've been coding and developing front-end applications for over{" "}
-          {PERSONAL_INFO.experience} and have completed several freelance
-          projects. Currently, I'm a {PERSONAL_INFO.yearLevel} at{" "}
+          My journey into web development started back when I was a Grade 10
+          high school student. I became fascinated with how websites were built
+          and decided to do some research. That's when I first encountered the
+          terms <CodeSpan>HTML</CodeSpan> and <CodeSpan>CSS</CodeSpan>. The real
+          magic happened when I discovered the browser's "Inspect Element"
+          feature—seeing the code behind websites was mind-blowing! From that
+          moment, I was completely hooked on web development.
+        </TypographyP>
+
+        <TypographyP className="text-foreground/90">
+          What started as teenage curiosity has evolved into over{" "}
+          {PERSONAL_INFO.experience} of coding and developing front-end
+          applications. I've completed several freelance projects, each one
+          teaching me something new about creating digital experiences that
+          users love. Currently, I'm a {PERSONAL_INFO.yearLevel} at{" "}
           {PERSONAL_INFO.university}, where I continue to deepen my
           understanding of technology and software development.
         </TypographyP>
