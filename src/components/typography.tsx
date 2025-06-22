@@ -9,7 +9,7 @@ export function TypographyH2({ className, children }: TypographyProps) {
   return (
     <h2
       className={cn(
-        "text-pretty bg-gradient-stop scroll-m-20 bg-gradient-to-br from-foreground via-foreground via-30% to-foreground/30 bg-clip-text font-heading text-2xl font-semibold tracking-tighter text-transparent md:text-3xl",
+        "bg-gradient-stop from-foreground via-foreground to-foreground/30 font-heading scroll-m-20 text-pretty bg-gradient-to-br via-30% bg-clip-text text-2xl font-semibold tracking-tighter text-transparent md:text-3xl",
         className
       )}
     >
@@ -22,7 +22,7 @@ export function TypographyH3({ className, children }: TypographyProps) {
   return (
     <h3
       className={cn(
-        "text-pretty bg-gradient-stop scroll-m-20 bg-gradient-to-br from-foreground via-foreground via-30% to-foreground/30 bg-clip-text font-heading text-2xl font-semibold tracking-tighter text-transparent",
+        "bg-gradient-stop from-foreground via-foreground to-foreground/30 font-heading scroll-m-20 text-pretty bg-gradient-to-br via-30% bg-clip-text text-2xl font-semibold tracking-tighter text-transparent",
         className
       )}
     >
@@ -33,7 +33,7 @@ export function TypographyH3({ className, children }: TypographyProps) {
 
 export function TypographyP({ className, children }: TypographyProps) {
   return (
-    <p className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}>
+    <p className={cn("leading-7 [&:not(:first-child)]:mt-4", className)}>
       {children}
     </p>
   )

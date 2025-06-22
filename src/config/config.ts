@@ -5,13 +5,14 @@ import { siteConfig } from "./site"
 export const REPOS = [
   "animehi-stream",
   "next-insider",
-  "chatup",
   "furniture-jmq",
+  "chatup",
+  // "bq-player",
   "just-work",
-  "bq-player",
 ]
 
 export const REPOS_URL = [
+  "benjoquilario.me",
   "anitaku-api",
   "amabank-landing-page",
   "next-movies",
