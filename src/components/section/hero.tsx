@@ -13,7 +13,7 @@ const Hero = () => {
   return (
     <section className="mb-12 flex flex-col">
       <div className="flex w-full flex-col-reverse items-center gap-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 self-start">
           {CORE_TECHNOLOGIES.map((tech) => (
             <Badge
               key={tech.name}

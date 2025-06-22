@@ -127,7 +127,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={`${geistSans.variable} ${geistMono.variable} antialiase min-h-screen`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="mx-auto max-w-3xl p-4">
+          <div className="mx-auto max-w-4xl p-4">
             <Header />
             <main>{children}</main>
             <Footer />

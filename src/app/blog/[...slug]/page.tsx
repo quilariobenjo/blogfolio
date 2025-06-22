@@ -150,12 +150,12 @@ export default async function ArticlePage({ params }: BlogProps) {
         </Link>
 
         <header className="mb-8">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight lg:text-5xl">
+          <h1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
             {blog.title}
           </h1>
 
           {blog.description && (
-            <p className="text-muted-foreground mb-6 text-xl leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
               {blog.description}
             </p>
           )}

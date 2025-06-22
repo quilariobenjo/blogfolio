@@ -6,87 +6,82 @@ import Link from "next/link"
 import {
   getAllProjects,
   getAllProjectSlugs,
-  getProjectById,
+  getProjectBySlug,
 } from "@/lib/projects"
 import { siteConfig } from "@/config/site"
 import { CustomMDX } from "@/components/mdx-content"
+import { BlogPostJsonLd, BreadcrumbJsonLd } from "@/components/structured-data"
 
 interface ProjectProps {
   params: Promise<{
-    id: string
+    slug: string[]
   }>
 }
 
 export async function generateStaticParams() {
   const slugs = getAllProjectSlugs()
   return slugs.map((slug) => ({
-    id: slug,
+    id: [slug],
   }))
 }
 
 export default async function ProjectPage({ params }: ProjectProps) {
-  const { id } = await params
+  const { slug } = await params
 
-  console.log(id)
+  const projectSlug = slug?.[0]
 
-  if (!id) {
+  if (!projectSlug) {
     notFound()
   }
 
-  const projects = getAllProjects()
-
-  console.log(projects)
-
-  const project = getProjectById(id)
-
-  console.log(project)
+  const project = getProjectBySlug(projectSlug)
 
   if (!project) {
     notFound()
   }
 
-  // const breadcrumbItems = [
-  //   {
-  //     name: "Home",
-  //     item: siteConfig.url,
-  //   },
-  //   {
-  //     name: "Blog",
-  //     item: `${siteConfig.url}/blog`,
-  //   },
-  //   {
-  //     name: blog.title,
-  //     item: `${siteConfig.url}/blog/${blog.slugAsParams}`,
-  //   },
-  // ]
+  const breadcrumbItems = [
+    {
+      name: "Home",
+      item: siteConfig.url,
+    },
+    {
+      name: "Projects",
+      item: `${siteConfig.url}/projects`,
+    },
+    {
+      name: project.title,
+      item: `${siteConfig.url}/blog/${project.slugAsParams}`,
+    },
+  ]
 
   return (
     <div className="container mx-auto">
-      {/* <BlogPostJsonLd
-        title={blog.title}
-        description={blog.description || ""}
-        datePublished={blog.date}
-        url={`${siteConfig.url}/blog/${blog.slugAsParams}`}
-        keywords={blog.tags || []}
+      <BlogPostJsonLd
+        title={project.title}
+        description={project.description || ""}
+        datePublished={project.date}
+        url={`${siteConfig.url}/blog/${project.slugAsParams}`}
+        keywords={project.tags || []}
       />
-      <BreadcrumbJsonLd items={breadcrumbItems} /> */}
+      <BreadcrumbJsonLd items={breadcrumbItems} />
 
       <article className="max-w-none break-words">
         <Link
-          href="/blog"
+          href="/projects"
           className="text-muted-foreground hover:text-foreground mb-6 flex items-center space-x-2 py-2 text-sm transition hover:underline hover:underline-offset-2"
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to blogs
+          Back to projects
         </Link>
 
         <header className="mb-8">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight lg:text-5xl">
+          <h1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
             {project.title}
           </h1>
 
           {project.description && (
-            <p className="text-muted-foreground mb-6 text-xl leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
               {project.description}
             </p>
           )}
@@ -110,7 +105,7 @@ export default async function ProjectPage({ params }: ProjectProps) {
             )}
           </div>
 
-          {project.tags && project.tags.length > 0 && (
+          {/* {project.tags && project.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               <Tag className="text-muted-foreground h-4 w-4" />
               {project.tags.map((tag) => (
@@ -123,7 +118,7 @@ export default async function ProjectPage({ params }: ProjectProps) {
                 </Link>
               ))}
             </div>
-          )}
+          )} */}
         </header>
 
         <hr className="mb-8" />

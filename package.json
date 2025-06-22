@@ -10,8 +10,7 @@
     "preview": "next build && next start",
     "clean": "rimraf .next && rimraf dist && rimraf out && rimraf .contentlayer",
     "update-deps": "npx --yes npm-check-updates -u && yarn",
-    "prettier": "prettier --write .",
-    "postinstall": "prisma generate"
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",

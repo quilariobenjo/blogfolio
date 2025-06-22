@@ -10,13 +10,15 @@ export function getAllProjects(): BlogPost[] {
     return []
   }
 
-  const projectDirectory = path.join(process.cwd(), "src/content/projects")
+  const projectDirectory = path.join(process.cwd(), "src/content/project")
 
   if (!fs.existsSync(projectDirectory)) {
     return []
   }
 
   const filenames = fs.readdirSync(projectDirectory)
+
+  console.log("Project directory:", projectDirectory, "Filenames:", filenames)
   const projects = filenames
     .filter((name) => name.endsWith(".mdx") || name.endsWith(".md"))
     .map((name) => {
@@ -39,12 +41,14 @@ export function getAllProjects(): BlogPost[] {
     .filter((blog) => blog.published) // Only return published blogs
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
+  console.log(projects)
+
   return projects
 }
 
-export function getProjectById(id: string): BlogPost | null {
+export function getProjectBySlug(slug: string): BlogPost | null {
   const allProjects = getAllProjects()
-  return allProjects.find((project) => project.id === id) || null
+  return allProjects.find((project) => project.slug === slug) || null
 }
 
 export function getAllProjectSlugs(): string[] {
