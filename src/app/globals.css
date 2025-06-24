@@ -296,11 +296,11 @@ body {
 }
 
 .prose ul {
-  @apply list-disc pl-6;
+  @apply list-disc pl-4;
 }
 
 .prose ol {
-  @apply list-decimal pl-6;
+  @apply list-decimal pl-4;
 }
 
 .prose > :first-child {

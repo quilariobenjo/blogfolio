@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  metadataBase: new URL("https://benjoquilario.me"),
+  metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
   keywords: [
     "Benjo Quilario",

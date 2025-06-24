@@ -21,7 +21,7 @@ const AboutMeSection: React.FC = () => {
           {PERSONAL_INFO.location}.
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           My journey into web development started back when I was a Grade 10
           high school student. I became fascinated with how websites were built
           and decided to do some research. That's when I first encountered the
@@ -31,7 +31,7 @@ const AboutMeSection: React.FC = () => {
           moment, I was completely hooked on web development.
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           What started as teenage curiosity has evolved into over{" "}
           {PERSONAL_INFO.experience} of coding and developing front-end
           applications. I've completed several freelance projects, each one
@@ -41,14 +41,14 @@ const AboutMeSection: React.FC = () => {
           understanding of technology and software development.
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           My passion lies in front-end development and creating exceptional user
           experiences. Recently, I've expanded my skills to include backend API
           development and UX/UI design principles, working toward becoming a
           well-rounded full-stack developer.
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           I'm currently focused on learning{" "}
           {LEARNING_FOCUS.map((item, index) => (
             <Fragment key={item}>
@@ -60,13 +60,13 @@ const AboutMeSection: React.FC = () => {
           .
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           Since technology evolves rapidly, I'm committed to continuous learning
           and staying current with the latest developments and best practices in
           the field.
         </TypographyP>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           When I'm not coding, I enjoy a variety of hobbies:
         </TypographyP>
 
@@ -76,7 +76,7 @@ const AboutMeSection: React.FC = () => {
           ))}
         </ul>
 
-        <TypographyP className="text-foreground/90">
+        <TypographyP>
           If you're in the {PERSONAL_INFO.meetupLocation} area, I'd love to
           connect! We could:
         </TypographyP>

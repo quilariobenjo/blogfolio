@@ -18,7 +18,7 @@ const Repositories = () => {
       <ul className="mx-0 mt-6 grid w-full grid-cols-1 gap-2.5 md:-mx-4 md:grid-cols-2">
         <Repository
           name="Horfi"
-          description="House of Refuge Foundation, a non-profit organization that provides shelter and support to children who have lost their homes."
+          description="A web-based management system designed to streamline operations and improve efficiency for the House of Refuge Foundation Inc."
           topics={["non-profit", "charity", "children", "shelter"]}
           language="TypeScript"
           isPrivate={true}

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { Calendar, Clock, User, Tag } from "lucide-react"
+import { Calendar, Clock, User, Tag, MoveLeft } from "lucide-react"
 import { relativeDate } from "@/lib/date"
 import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
@@ -11,6 +11,9 @@ import {
 import { siteConfig } from "@/config/site"
 import { CustomMDX } from "@/components/mdx-content"
 import { BlogPostJsonLd, BreadcrumbJsonLd } from "@/components/structured-data"
+import { TypographyH1, TypographyP } from "@/components/typography"
+import { type Metadata } from "next"
+import { env } from "@/env.mjs"
 
 interface ProjectProps {
   params: Promise<{
@@ -23,6 +26,79 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({
     id: [slug],
   }))
+}
+
+export async function generateMetadata({
+  params,
+}: ProjectProps): Promise<Metadata | undefined> {
+  const { slug } = await params
+  const projectSlug = slug?.[0]
+
+  if (!projectSlug) {
+    return
+  }
+
+  const project = getProjectBySlug(projectSlug)
+
+  if (!project) {
+    return
+  }
+
+  const {
+    title,
+    date: publishedTime,
+    description,
+    slugAsParams,
+    tags = [],
+  } = project
+
+  return {
+    title,
+    description,
+    keywords:
+      tags.length > 0
+        ? tags
+        : [
+            "web development",
+            "programming",
+            "tutorial",
+            "javascript",
+            "react",
+            "nextjs",
+          ],
+    authors: [
+      {
+        name: siteConfig.name,
+        url: siteConfig.url,
+      },
+    ],
+    alternates: {
+      canonical: `/project/${slugAsParams}`,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime,
+      authors: [siteConfig.name],
+      url: `${env.NEXT_PUBLIC_APP_URL}/projects/${slugAsParams}`,
+      images: [
+        {
+          url: `${env.NEXT_PUBLIC_APP_URL}/og.jpeg`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${env.NEXT_PUBLIC_APP_URL}/og.jpeg`],
+    },
+    publisher: `${siteConfig.name}`,
+  }
 }
 
 export default async function ProjectPage({ params }: ProjectProps) {
@@ -51,7 +127,7 @@ export default async function ProjectPage({ params }: ProjectProps) {
     },
     {
       name: project.title,
-      item: `${siteConfig.url}/blog/${project.slugAsParams}`,
+      item: `${siteConfig.url}/projects/${project.slugAsParams}`,
     },
   ]
 
@@ -61,7 +137,7 @@ export default async function ProjectPage({ params }: ProjectProps) {
         title={project.title}
         description={project.description || ""}
         datePublished={project.date}
-        url={`${siteConfig.url}/blog/${project.slugAsParams}`}
+        url={`${siteConfig.url}/projects/${project.slugAsParams}`}
         keywords={project.tags || []}
       />
       <BreadcrumbJsonLd items={breadcrumbItems} />
@@ -71,19 +147,19 @@ export default async function ProjectPage({ params }: ProjectProps) {
           href="/projects"
           className="text-muted-foreground hover:text-foreground mb-6 flex items-center space-x-2 py-2 text-sm transition hover:underline hover:underline-offset-2"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" />
+          <MoveLeft className="mr-2 h-4 w-4" />
           Back to projects
         </Link>
 
         <header className="mb-8">
-          <h1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
+          <TypographyH1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
             {project.title}
-          </h1>
+          </TypographyH1>
 
           {project.description && (
-            <p className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
+            <TypographyP className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
               {project.description}
-            </p>
+            </TypographyP>
           )}
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">

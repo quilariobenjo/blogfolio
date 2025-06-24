@@ -3,14 +3,14 @@ import { CustomMDX } from "@/components/mdx-content"
 import { RelatedPosts } from "@/components/shared/related-posts"
 import { BlogPostJsonLd, BreadcrumbJsonLd } from "@/components/structured-data"
 import { notFound } from "next/navigation"
-import { Calendar, Clock, User, Tag } from "lucide-react"
+import { Calendar, Clock, User, Tag, MoveLeft } from "lucide-react"
 import { relativeDate } from "@/lib/date"
-import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { env } from "@/env.mjs"
 import { getBlogBySlug, getAllBlogSlugs } from "@/lib/blog"
 import { getRelatedBlogs } from "@/lib/blog-tags"
+import { TypographyH1, TypographyP } from "@/components/typography"
 
 interface BlogProps {
   params: Promise<{
@@ -145,19 +145,19 @@ export default async function ArticlePage({ params }: BlogProps) {
           href="/blog"
           className="text-muted-foreground hover:text-foreground mb-6 flex items-center space-x-2 py-2 text-sm transition hover:underline hover:underline-offset-2"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" />
+          <MoveLeft className="mr-2 h-4 w-4" />
           Back to blogs
         </Link>
 
         <header className="mb-8">
-          <h1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
+          <TypographyH1 className="mb-4 text-xl font-bold tracking-tight lg:text-3xl">
             {blog.title}
-          </h1>
+          </TypographyH1>
 
           {blog.description && (
-            <p className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
+            <TypographyP className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
               {blog.description}
-            </p>
+            </TypographyP>
           )}
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">

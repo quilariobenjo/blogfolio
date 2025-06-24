@@ -6,6 +6,33 @@ import Image from "next/image"
 import { Suspense } from "react"
 import RepositorySkeleton from "@/components/skeleton/repositories-skeleton"
 import { Repository } from "@/components/shared/repositories"
+import { Metadata } from "next"
+import { siteConfig } from "@/config/site"
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description:
+    "Projects by Benjo M. Quilario - A passionate 23-year-old Frontend Developer from the Philippines specializing in React, Next.js, and modern web development.",
+  keywords: [
+    "projects",
+    "benjo quilario",
+    "frontend developer",
+    "philippines",
+    "react developer",
+    "nextjs developer",
+    "web developer",
+    "software engineer",
+  ],
+  alternates: {
+    canonical: "/projects",
+  },
+  openGraph: {
+    title: "Projects - Benjo M. Quilario",
+    description:
+      "Learn more about Benjo M. Quilario, a Frontend Developer from the Philippines.",
+    url: `${siteConfig.url}/projects`,
+  },
+}
 
 const Projects = () => {
   return (

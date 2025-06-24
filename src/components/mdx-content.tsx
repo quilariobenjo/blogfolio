@@ -178,15 +178,30 @@ let components = {
   h6: createHeading(6),
   p: ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p
-      className={cn("leading-7 [&:not(:first-child)]:mt-5", className)}
+      className={cn(
+        "text-sm leading-7 md:text-base [&:not(:first-child)]:mt-5",
+        className
+      )}
       {...props}
     />
   ),
   ul: ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className={cn("my-6 ml-6 list-disc", className)} {...props} />
+    <ul
+      className={cn(
+        "my-3 ml-1 list-disc text-sm leading-7 md:ml-3 md:text-base",
+        className
+      )}
+      {...props}
+    />
   ),
   ol: ({ className, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className={cn("my-6 ml-6 list-decimal", className)} {...props} />
+    <ol
+      className={cn(
+        "my-3 ml-1 list-decimal text-sm leading-7 md:ml-3 md:text-base",
+        className
+      )}
+      {...props}
+    />
   ),
   li: ({ className, ...props }: any) => (
     <li className={cn("mt-2", className)} {...props} />
@@ -194,7 +209,7 @@ let components = {
   blockquote: ({ className, ...props }: any) => (
     <blockquote
       className={cn(
-        "[&>*]:text-muted-foreground mt-6 border-l-2 pl-6 italic",
+        "[&>*]:text-muted-foreground mt-3 border-l-2 pl-2 italic",
         className
       )}
       {...props}

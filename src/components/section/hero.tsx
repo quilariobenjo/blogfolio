@@ -14,26 +14,29 @@ const Hero = () => {
     <section className="mb-12 flex flex-col">
       <div className="flex w-full flex-col-reverse items-center gap-4">
         <div className="flex flex-wrap gap-2 self-start">
-          {CORE_TECHNOLOGIES.map((tech) => (
-            <Badge
-              key={tech.name}
-              variant="secondary"
-              className="text-xs font-medium"
-            >
-              {tech.name}
-            </Badge>
-          ))}
+          <h4 className="font-heading scroll-m-20 text-lg font-medium tracking-tight">
+            Here are a few technologies that are my cup of tea ☕
+          </h4>
+          <div className="flex flex-wrap items-center gap-2">
+            {CORE_TECHNOLOGIES.map((tech) => (
+              <Badge
+                key={tech.name}
+                variant="secondary"
+                className="text-xs font-medium"
+              >
+                {tech.name}
+              </Badge>
+            ))}
+          </div>
         </div>
         <div className="flex w-full flex-col">
           <h1 className="bg-gradient-stop from-foreground via-foreground to-foreground/30 font-heading mt-2 scroll-m-20 text-pretty bg-gradient-to-br via-30% bg-clip-text text-4xl font-extrabold tracking-tighter text-transparent md:text-5xl">
             hey, I'm benjo 👋
           </h1>
-          <TypographyP className="text-foreground/90 mt-2 text-sm leading-6 md:text-[15px]">
+          <TypographyP>
             I am a frontend developer specializing in frontend integration.
             Recently, I have expanded my skill set to include backend API
-            development and UX/UI design. I am passionate about building
-            seamless user experiences and enjoy bridging the gap between design
-            and development to create intuitive, high-quality web applications.
+            development and UX/UI design
           </TypographyP>
         </div>
         <div className="relative w-full">

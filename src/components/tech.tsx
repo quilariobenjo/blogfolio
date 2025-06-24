@@ -17,12 +17,12 @@ import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 
 export const CORE_TECHNOLOGIES = [
+  { name: "Next.js", icon: SiNextdotjs },
+  { name: "React", icon: SiReact },
   { name: "JavaScript", icon: SiJavascript },
   { name: "TypeScript", icon: SiTypescript },
   { name: "HTML5", icon: SiHtml5 },
   { name: "CSS3", icon: SiCss3 },
-  { name: "React", icon: SiReact },
-  { name: "Next.js", icon: SiNextdotjs },
   { name: "Node.js", icon: SiNodedotjs },
   { name: "Tailwind CSS", icon: SiTailwindcss },
   { name: "PostgreSQL", icon: SiPostgresql },

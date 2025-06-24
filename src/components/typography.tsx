@@ -5,6 +5,19 @@ type TypographyProps = {
   children: React.ReactNode
 }
 
+export function TypographyH1({ className, children }: TypographyProps) {
+  return (
+    <h1
+      className={cn(
+        "bg-gradient-stop from-foreground via-foreground to-foreground/30 font-heading scroll-m-20 bg-gradient-to-br via-30% bg-clip-text text-4xl font-semibold tracking-tighter text-transparent md:text-5xl",
+        className
+      )}
+    >
+      {children}
+    </h1>
+  )
+}
+
 export function TypographyH2({ className, children }: TypographyProps) {
   return (
     <h2

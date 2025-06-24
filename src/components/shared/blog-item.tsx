@@ -1,7 +1,7 @@
 "use client"
 
 import { Calendar, Clock } from "lucide-react"
-import React from "react"
+import React, { Suspense } from "react"
 import { TypographyH3, TypographyP } from "../typography"
 import { type BlogPost } from "@/lib/blog"
 import { relativeDate } from "@/lib/date"
@@ -28,9 +28,12 @@ const BlogItem: React.FC<BlogItemProps> = ({ blog }) => {
           <div className="flex flex-wrap items-stretch justify-start gap-3">
             <div className="flex shrink-0 items-center gap-2">
               <Calendar className="h-4 w-4" aria-hidden />
+              <Suspense>
               <span className="text-sm text-muted-foreground/90">
                 {relativeDate(blog.date)}
               </span>
+              </Suspense>
+              
             </div>
             {Boolean(blog.readingTime?.minutes) && (
               <div className="flex shrink-0 items-center gap-2">

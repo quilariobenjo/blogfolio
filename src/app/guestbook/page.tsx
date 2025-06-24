@@ -5,8 +5,6 @@ import { getGuestbookEntriesDrizzle } from "./drizzle-actions"
 import { SignIn, SignOut } from "@/components/guestbook/auth-buttons"
 import { GuestbookForm } from "@/components/guestbook/guestbook-form"
 import { GuestbookEntries } from "@/components/guestbook/guestbook-entries"
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { TypographyH2 } from "@/components/typography"
 
 export const metadata: Metadata = {

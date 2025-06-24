@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     title: "Contact - Benjo M. Quilario",
     description:
       "Get in touch with Benjo M. Quilario for collaboration opportunities.",
-    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://benjoquilario.me"}/contact`,
+    url: `${siteConfig.url}/contact`,
   },
 }
 

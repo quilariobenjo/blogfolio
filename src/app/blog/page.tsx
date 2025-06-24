@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blog - Benjo M. Quilario",
     description: "Read my thoughts on software development, design, and more.",
-    url: `${process.env.NEXT_PUBLIC_APP_URL || "https://benjoquilario.me"}/blog`,
+    url: `${siteConfig.url}/blog`,
   },
 }
 

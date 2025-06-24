@@ -1,5 +1,6 @@
+import { siteConfig } from "@/config/site"
 import { getAllBlogs } from "@/lib/blog"
-import { env } from "@/env.mjs"
+import { SiteConfig } from "@/types"
 
 export async function GET() {
   const allBlogs = getAllBlogs()
@@ -7,7 +8,7 @@ export async function GET() {
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>${env.NEXT_PUBLIC_APP_URL}/blog</loc>
+    <loc>${siteConfig.url}/blog</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -16,7 +17,7 @@ export async function GET() {
     .map(
       (post) => `
   <url>
-    <loc>${env.NEXT_PUBLIC_APP_URL}/blog/${post.slug}</loc>
+    <loc>${siteConfig.url}/blog/${post.slug}</loc>
     <lastmod>${new Date(post.date).toISOString()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

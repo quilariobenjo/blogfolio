@@ -8,11 +8,11 @@ import { eq } from "drizzle-orm"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const Admin = async () => {
-  const session = await auth()
+  // const session = await auth()
 
-  if (!session) redirect("/")
+  // if (!session) redirect("/")
 
-  if (session?.user?.email !== "benjoquilario@gmail.com") notFound()
+  // if (session?.user?.email !== "benjoquilario@gmail.com") notFound()
 
   const guestbookEntries = await db.query.guestEntries.findMany({
     orderBy: (guestEntries, { desc }) => desc(guestEntries.createdAt),
@@ -35,7 +35,7 @@ const Admin = async () => {
       <Tabs defaultValue="guestbook" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="guestbook">Guestbook</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
         </TabsList>
         <TabsContent value="guestbook">
           <div className="flex items-center justify-between">
@@ -52,7 +52,7 @@ const Admin = async () => {
                 : {entry.body}
               </div>
               <form
-                className="ml-10 inline-flex"
+                className="ml-10 inline-flex mt-2"
                 action={async () => {
                   "use server"
                   await db
@@ -64,7 +64,7 @@ const Admin = async () => {
                   revalidatePath("/guestbook")
                 }}
               >
-                <Button type="submit">Delete</Button>
+                <Button type="submit" size="sm">Delete</Button>
               </form>
             </div>
           ))}
@@ -77,8 +77,8 @@ const Admin = async () => {
               className="hover:bg-muted flex w-full justify-between break-words text-sm"
             >
               <div>
-                <span className="text-muted-foreground">{email.email}</span> :{" "}
-                {email.body}
+                <span className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: email.email }}></span> :{" "}
+                <span dangerouslySetInnerHTML={{ __html: email.body }}></span>
               </div>
             </div>
           ))}
