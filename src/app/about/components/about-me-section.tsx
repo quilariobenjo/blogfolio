@@ -22,13 +22,14 @@ const AboutMeSection: React.FC = () => {
         </TypographyP>
 
         <TypographyP>
-          My journey into web development started back when I was a Grade 10
-          high school student. I became fascinated with how websites were built
-          and decided to do some research. That's when I first encountered the
-          terms <CodeSpan>HTML</CodeSpan> and <CodeSpan>CSS</CodeSpan>. The real
-          magic happened when I discovered the browser's "Inspect Element"
-          feature—seeing the code behind websites was mind-blowing! From that
-          moment, I was completely hooked on web development.
+          My journey into web development began in Grade 10, when curiosity
+          about how websites worked led me to discover <CodeSpan>HTML</CodeSpan>{" "}
+          and <CodeSpan>CSS</CodeSpan>. The first time I used the browser's
+          "Inspect Element" tool, I was amazed to see the code behind the
+          scenes. During the pandemic, with more time at home and a laptop in
+          hand, I started learning web development seriously—diving into HTML,
+          CSS, and JavaScript. That curiosity quickly grew into a passion and
+          set me on the path toward a career in tech.
         </TypographyP>
 
         <TypographyP>
