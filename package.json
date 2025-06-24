@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "preview": "next build && next start",
+    "analyze": "ANALYZE=true next build",
     "clean": "rimraf .next && rimraf dist && rimraf out && rimraf .contentlayer",
     "update-deps": "npx --yes npm-check-updates -u && yarn",
     "prettier": "prettier --write ."
@@ -75,6 +76,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.0",
+    "@next/bundle-analyzer": "^15.3.4",
     "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
