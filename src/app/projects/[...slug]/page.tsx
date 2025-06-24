@@ -14,6 +14,7 @@ import { BlogPostJsonLd, BreadcrumbJsonLd } from "@/components/structured-data"
 import { TypographyH1, TypographyP } from "@/components/typography"
 import { type Metadata } from "next"
 import { env } from "@/env.mjs"
+import { Badge } from "@/components/ui/badge"
 
 interface ProjectProps {
   params: Promise<{
@@ -181,20 +182,20 @@ export default async function ProjectPage({ params }: ProjectProps) {
             )}
           </div>
 
-          {/* {project.tags && project.tags.length > 0 && (
+          {project.tags && project.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               <Tag className="text-muted-foreground h-4 w-4" />
               {project.tags.map((tag) => (
-                <Link
+                <Badge
                   key={tag}
-                  href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="bg-muted hover:bg-muted/80 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+                  // href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                  // className="bg-muted hover:bg-muted/80 rounded-full px-3 py-1 text-xs font-medium transition-colors"
                 >
                   {tag}
-                </Link>
+                </Badge>
               ))}
             </div>
-          )} */}
+          )}
         </header>
 
         <hr className="mb-8" />

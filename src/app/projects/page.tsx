@@ -41,36 +41,50 @@ const Projects = () => {
         <TypographyH2 className="text-3xl">
           <span className="text-4xl">P</span>rojects
         </TypographyH2>
-        <p className="text-muted-foreground/80">Some of my projects</p>
+        <p className="text-muted-foreground/80">
+          Some of my projects public and private
+        </p>
       </div>
       <div className="flex items-center gap-2 py-3">
         <div>
-          <div className="relative h-14 w-14">
+          <div className="border-primary relative h-16 w-16 overflow-hidden rounded-full border-2 shadow-lg">
             <Image
-              alt="benjoquilario"
+              alt="Benjo Quilario avatar"
               fill
               src="https://avatars.githubusercontent.com/u/82529126?v=4"
+              className="object-cover"
+              sizes="64px"
+              priority
             />
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <div className="text-foreground">Benjo Quilario</div>
           <div className="text-foreground/80 text-sm">
-            https://github.com/benjoquilario
+            <a
+              className="text-muted-foreground hover:text-foreground"
+              href="https://github.com/benjoquilario"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              https://github.com/benjoquilario
+            </a>
           </div>
         </div>
       </div>
       <ul className="mx-0 mt-3 grid w-full grid-cols-1 gap-2.5 md:-mx-4">
+        <Repository
+          name="api.animehi"
+          isPrivate
+          topics={["anime", "api", "restful"]}
+          description="A RESTful API for anime data, providing information about anime series, episodes, characters, and more."
+        />
+
         {REPOS_URL.map((repo) => (
           <Suspense key={repo} fallback={<RepositorySkeleton />}>
             <RepositoriesItem key={repo} repoName={repo} />
           </Suspense>
         ))}
-
-        <Repository
-          name="Horfi"
-          description="House of Refuge Foundation, a non-profit organization that provides shelter and support to children who have lost their homes."
-        />
       </ul>
     </div>
   )
