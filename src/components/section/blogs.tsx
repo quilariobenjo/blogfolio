@@ -2,7 +2,7 @@ import BlogItem from "@/components/shared/blog-item"
 import { TypographyH2 } from "@/components/typography"
 import { getAllBlogs } from "@/lib/blog"
 
-export default function Blogs() {
+export default async function Blogs() {
   const allBlogs = getAllBlogs()
 
   return (
