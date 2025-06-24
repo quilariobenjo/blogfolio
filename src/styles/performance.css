@@ -1,0 +1,146 @@
+/* Performance optimizations for better main-thread work */
+
+/* Use CSS containment for better rendering performance */
+.repository-item,
+.blog-item,
+.qa-item {
+  contain: layout style paint;
+}
+
+/* Optimize animations with will-change */
+.fade-animation,
+.hover-animation {
+  will-change: transform, opacity;
+}
+
+/* Remove will-change after animation completes */
+.fade-animation.animation-complete,
+.hover-animation:not(:hover) {
+  will-change: auto;
+}
+
+/* Use transform3d to enable hardware acceleration */
+.hardware-accelerated {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Optimize font rendering */
+body {
+  font-display: swap;
+  text-rendering: optimizeSpeed;
+}
+
+/* Reduce layout thrashing with content-visibility */
+.lazy-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* Optimize images for better performance */
+img {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 200px;
+}
+
+/* Use CSS Grid for better layout performance */
+.grid-optimized {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* Optimize scrolling performance */
+.scroll-container {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Reduce paint complexity */
+.simple-shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Use CSS custom properties for better performance */
+:root {
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+}
+
+/* Optimize hover states */
+.hover-optimized {
+  transition: transform var(--transition-fast);
+}
+
+.hover-optimized:hover {
+  transform: translateY(-2px);
+}
+
+/* Reduce reflow with fixed dimensions where possible */
+.avatar-container {
+  width: 125px;
+  height: 125px;
+  flex-shrink: 0;
+}
+
+/* Use efficient selectors */
+.tech-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Optimize list rendering */
+.optimized-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.optimized-list-item {
+  contain: layout style;
+  margin-bottom: 1rem;
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-section {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Defer non-critical animations */
+@media (prefers-reduced-motion: no-preference) {
+  .delayed-animation {
+    animation-delay: 0.1s;
+  }
+}
+
+/* Optimize for mobile performance */
+@media (max-width: 768px) {
+  .mobile-optimized {
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  .mobile-optimized:hover {
+    transform: none !important;
+  }
+}
+
+/* Use efficient backdrop filters */
+.backdrop-optimized {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Optimize focus states for accessibility */
+.focus-optimized:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}

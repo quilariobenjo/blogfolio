@@ -1,9 +1,18 @@
-import RepositoriesItem from "@/components/shared/repositories-item"
 import { REPOS } from "@/config/config"
 import { TypographyH2 } from "@/components/typography"
 import RepositorySkeleton from "@/components/skeleton/repositories-skeleton"
-import React from "react"
+import React, { Suspense } from "react"
 import { Repository } from "../shared/repositories"
+import dynamic from "next/dynamic"
+
+// Dynamically import RepositoriesItem to reduce initial bundle size
+const RepositoriesItem = dynamic(
+  () => import("@/components/shared/repositories-item"),
+  {
+    loading: () => <RepositorySkeleton />,
+    ssr: true,
+  }
+)
 
 const Repositories = () => {
   return (
@@ -25,9 +34,9 @@ const Repositories = () => {
           hasExternalLink={true}
         />
         {REPOS.map((repo) => (
-          <React.Suspense key={repo} fallback={<RepositorySkeleton />}>
-            <RepositoriesItem key={repo} repoName={repo} />
-          </React.Suspense>
+          <Suspense key={repo} fallback={<RepositorySkeleton />}>
+            <RepositoriesItem repoName={repo} />
+          </Suspense>
         ))}
       </ul>
     </section>

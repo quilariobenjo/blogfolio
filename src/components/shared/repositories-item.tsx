@@ -38,6 +38,8 @@ async function getRepos(repo: string): Promise<GitHubRepository> {
           revalidate: 3600, // Cache for 1 hour
           tags: [`repo-${repo}`], // Add cache tags for selective revalidation
         },
+        // Add signal for request timeout
+        signal: AbortSignal.timeout(10000), // 10 second timeout
       }
     )
 

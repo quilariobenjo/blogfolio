@@ -1,31 +1,21 @@
 "use client"
 
 import React from "react"
-import {
-  SiJavascript,
-  SiTypescript,
-  SiHtml5,
-  SiCss3,
-  SiReact,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiTailwindcss,
-  SiPostgresql,
-} from "react-icons/si"
 import { ExternalLink } from "lucide-react"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 
+// Optimize bundle size by only importing icon names, not the actual icons
 export const CORE_TECHNOLOGIES = [
-  { name: "Next.js", icon: SiNextdotjs },
-  { name: "React", icon: SiReact },
-  { name: "JavaScript", icon: SiJavascript },
-  { name: "TypeScript", icon: SiTypescript },
-  { name: "HTML5", icon: SiHtml5 },
-  { name: "CSS3", icon: SiCss3 },
-  { name: "Node.js", icon: SiNodedotjs },
-  { name: "Tailwind CSS", icon: SiTailwindcss },
-  { name: "PostgreSQL", icon: SiPostgresql },
+  { name: "Next.js" },
+  { name: "React" },
+  { name: "JavaScript" },
+  { name: "TypeScript" },
+  { name: "HTML5" },
+  { name: "CSS3" },
+  { name: "Node.js" },
+  { name: "Tailwind CSS" },
+  { name: "PostgreSQL" },
 ] as const
 
 interface TechProps {

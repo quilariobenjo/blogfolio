@@ -1,11 +1,23 @@
 import Hero from "@/components/section/hero"
-import Articles from "@/components/section/blogs"
-import Repositories from "@/components/section/repositories"
-import QuestionAnswer from "@/components/section/qa"
 import { BreadcrumbJsonLd } from "@/components/structured-data"
 import { siteConfig } from "@/config/site"
 import { Metadata } from "next"
 import * as React from "react"
+import LazyComponent from "@/components/lazy-component"
+import dynamic from "next/dynamic"
+
+// Dynamically import heavy components to reduce initial bundle size
+const Articles = dynamic(() => import("@/components/section/blogs"), {
+  ssr: true,
+})
+
+const Repositories = dynamic(() => import("@/components/section/repositories"), {
+  ssr: true,
+})
+
+const QuestionAnswer = dynamic(() => import("@/components/section/qa"), {
+  ssr: true,
+})
 
 export const metadata: Metadata = {
   title: "Home",
@@ -27,9 +39,15 @@ export default function Home() {
     <React.Fragment>
       <BreadcrumbJsonLd items={breadcrumbItems} />
       <Hero />
-      <Repositories />
-      <Articles />
-      <QuestionAnswer />
+      <LazyComponent>
+        <Repositories />
+      </LazyComponent>
+      <LazyComponent>
+        <Articles />
+      </LazyComponent>
+      <LazyComponent>
+        <QuestionAnswer />
+      </LazyComponent>
     </React.Fragment>
   )
 }

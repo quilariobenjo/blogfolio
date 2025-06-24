@@ -16,7 +16,7 @@ export function FadeText({
   className,
   framerProps = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { type: "spring" } },
+    show: { opacity: 1, transition: { type: "spring", duration: 0.5 } },
   },
   text,
 }: FadeTextProps) {
@@ -37,12 +37,14 @@ export function FadeText({
       hidden: {
         ...(hidden ?? {}),
         opacity: hidden?.opacity ?? 0,
-        [axis]: hidden?.[axis] ?? directionOffset,
+        // Use transform instead of individual axis properties for better performance
+        transform: `translate${axis.toUpperCase()}(${directionOffset}px)`,
       },
       show: {
         ...(show ?? {}),
         opacity: show?.opacity ?? 1,
-        [axis]: show?.[axis] ?? 0,
+        // Use transform for better performance
+        transform: `translate${axis.toUpperCase()}(0px)`,
       },
     }
   }, [directionOffset, axis, framerProps])
@@ -53,8 +55,12 @@ export function FadeText({
       animate="show"
       viewport={{ once: true }}
       variants={FADE_ANIMATION_VARIANTS}
+      style={{
+        // Add will-change for better performance
+        willChange: "transform, opacity",
+      }}
     >
-      <motion.span className={className}>{text}</motion.span>
+      <span className={className}>{text}</span>
     </motion.div>
   )
 }

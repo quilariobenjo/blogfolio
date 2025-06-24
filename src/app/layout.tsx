@@ -9,18 +9,21 @@ import Footer from "@/components/site-footer"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/next"
 import { PersonJsonLd, WebsiteJsonLd } from "@/components/structured-data"
-// import { MDXProvider } from "@mdx-js/react"
-// import { useMDXComponents } from "@/mdx-components"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import PerformanceProvider from "@/components/performance-provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 })
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -116,28 +119,31 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  // const components = useMDXComponents({})
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <PersonJsonLd />
         <WebsiteJsonLd />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://api.github.com" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiase min-h-screen`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="mx-auto max-w-4xl p-4">
-            <Header />
-            <main>{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
-          <TailwindIndicator />
-          <Analytics />
-          <SpeedInsights />
-        </ThemeProvider>
+        <PerformanceProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="mx-auto max-w-4xl p-4">
+              <Header />
+              <main>{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+            <TailwindIndicator />
+            <Analytics />
+            <SpeedInsights />
+          </ThemeProvider>
+        </PerformanceProvider>
       </body>
     </html>
   )
