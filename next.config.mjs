@@ -1,5 +1,11 @@
 import "./src/env.mjs"
+
 import createMDX from "@next/mdx"
+import withBundleAnalyzer from "@next/bundle-analyzer"
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+})
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,7 +23,7 @@ const nextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   serverExternalPackages: ["gray-matter"],
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: ["lucide-react", "react-icons"],
   },
   compress: true,
 }
@@ -27,4 +33,7 @@ const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
 })
 
-export default withMDX(nextConfig)
+export default () => {
+  const plugins = [withMDX, bundleAnalyzer]
+  return plugins.reduce((acc, plugin) => plugin(acc), nextConfig)
+}
