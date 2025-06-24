@@ -2,14 +2,14 @@
 export const PERSONAL_INFO = {
   location: "Quezon City, Philippines",
   university: "AMA University",
-  yearLevel: "3rd-year BSIT student",
+  yearLevel: "4th-year BSIT student",
   experience: "3+ years",
   meetupLocation: "Novaliches, Quezon City",
 } as const
 
 export const LEARNING_FOCUS = [
   "React Native",
-  "data structures & algorithms with JavaScript",
+  "data structures & algorithms",
   "the path to becoming a full-stack web developer",
 ] as const
 
