@@ -13,11 +13,12 @@ export const REPOS = [
 
 export const REPOS_URL = [
   "benjoquilario.me",
-  "anitaku-api",
-  "amabank-landing-page",
-  "next-movies",
-  "crud-invoice-app",
   "marino-clothing",
+  "bq-player",
+  "crud-invoice-app",
+  "amabank-landing-page",
+  "anitaku-api",
+  "next-movies",
 ]
 
 export const qa = [
