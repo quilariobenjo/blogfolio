@@ -8,20 +8,21 @@ import { relativeDate } from "@/lib/date"
 import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { env } from "@/env.mjs"
-import { getBlogBySlug, getAllBlogSlugs } from "@/lib/blog"
+import { getBlogBySlug, getAllBlogs } from "@/lib/blog"
 import { getRelatedBlogs } from "@/lib/blog-tags"
 import { TypographyH1, TypographyP } from "@/components/typography"
+import { generateOGImageUrl } from "@/lib/og-image"
 
 interface BlogProps {
   params: Promise<{
-    slug: string[]
+    slug: string
   }>
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllBlogSlugs()
+  const slugs = getAllBlogs()
   return slugs.map((slug) => ({
-    slug: [slug],
+    slug: slug.slugAsParams,
   }))
 }
 
@@ -29,13 +30,12 @@ export async function generateMetadata({
   params,
 }: BlogProps): Promise<Metadata | undefined> {
   const { slug } = await params
-  const blogSlug = slug?.[0]
 
-  if (!blogSlug) {
+  if (!slug) {
     return
   }
 
-  const blog = getBlogBySlug(blogSlug)
+  const blog = getBlogBySlug(slug)
 
   if (!blog) {
     return
@@ -48,6 +48,12 @@ export async function generateMetadata({
     slugAsParams,
     tags = [],
   } = blog
+
+  const ogImageUrl = generateOGImageUrl({
+    title,
+    date: publishedTime,
+    type: "Blog",
+  })
 
   return {
     title,
@@ -81,7 +87,7 @@ export async function generateMetadata({
       url: `${env.NEXT_PUBLIC_APP_URL}/blog/${slugAsParams}`,
       images: [
         {
-          url: `${env.NEXT_PUBLIC_APP_URL}/og.jpeg`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -92,7 +98,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${env.NEXT_PUBLIC_APP_URL}/og.jpeg`],
+      images: [ogImageUrl],
     },
     publisher: `${siteConfig.name}`,
   }
@@ -100,13 +106,12 @@ export async function generateMetadata({
 
 export default async function ArticlePage({ params }: BlogProps) {
   const { slug } = await params
-  const blogSlug = slug?.[0]
 
-  if (!blogSlug) {
+  if (!slug) {
     notFound()
   }
 
-  const blog = getBlogBySlug(blogSlug)
+  const blog = getBlogBySlug(slug)
 
   if (!blog) {
     notFound()

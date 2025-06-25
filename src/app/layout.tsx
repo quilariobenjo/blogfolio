@@ -131,6 +131,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <div className="mx-auto max-w-4xl p-4">
             <Header />
             <main>{children}</main>
+            {/* <ChatBot /> */}
             <Footer />
           </div>
           <Toaster />

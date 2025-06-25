@@ -15,6 +15,7 @@ import { TypographyH1, TypographyP } from "@/components/typography"
 import { type Metadata } from "next"
 import { env } from "@/env.mjs"
 import { Badge } from "@/components/ui/badge"
+import { generateOGImageUrl } from "@/lib/og-image"
 
 interface ProjectProps {
   params: Promise<{
@@ -53,6 +54,12 @@ export async function generateMetadata({
     tags = [],
   } = project
 
+  const ogImageUrl = generateOGImageUrl({
+    title,
+    date: publishedTime,
+    type: "Project",
+  })
+
   return {
     title,
     description,
@@ -85,7 +92,7 @@ export async function generateMetadata({
       url: `${env.NEXT_PUBLIC_APP_URL}/projects/${slugAsParams}`,
       images: [
         {
-          url: `${env.NEXT_PUBLIC_APP_URL}/og.jpeg`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -96,7 +103,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${env.NEXT_PUBLIC_APP_URL}/og.jpeg`],
+      images: [ogImageUrl],
     },
     publisher: `${siteConfig.name}`,
   }

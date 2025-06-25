@@ -2,31 +2,12 @@
 
 import { kv } from "@vercel/kv"
 import { Ratelimit } from "@upstash/ratelimit"
-import { revalidatePath, revalidateTag } from "next/cache"
-import { auth } from "@/auth"
-import { session as sessionAuth } from "@/lib/validations/session"
-import { env } from "@/env.mjs"
 import { db } from "@/database"
-
-import {
-  CreateEmailOptions,
-  CreateEmailResponse,
-} from "resend/build/src/emails/interfaces"
 import { emailSent } from "@/database/schema"
+import { Resend } from "resend"
+import { siteConfig } from "@/config/site"
 
-export async function sendMail(options: CreateEmailOptions) {
-  const data = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(options),
-  })
-
-  const response = await data.json()
-  return response as CreateEmailResponse
-}
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface ISendEmail {
   emailAddress: string
@@ -43,7 +24,7 @@ export async function sendEmail({
 }: ISendEmail) {
   const ratelimit = new Ratelimit({
     redis: kv,
-    limiter: Ratelimit.fixedWindow(2, "1 m"),
+    limiter: Ratelimit.fixedWindow(3, "3 m"),
   })
 
   const { success, reset } = await ratelimit.limit(emailAddress)
@@ -57,9 +38,16 @@ export async function sendEmail({
   }
 
   if (process.env.NODE_ENV === "production") {
-    await sendMail({
-      from: `${action}@benjoquilario.site`,
-      to: "benjoquilario@gmail.com",
+    // await sendMail({
+    //   from: `${action}@benjoquilario.site`,
+    //   to: "benjoquilario@gmail.com",
+    //   subject: `${messageBy} message you!`,
+    //   html: `<p>Email: ${emailAddress}</p><p>Message: ${body}</p>`,
+    // })
+
+    await resend.emails.send({
+      from: `${action}@${siteConfig}`,
+      to: ["benjoquilario@gmail.com"],
       subject: `${messageBy} message you!`,
       html: `<p>Email: ${emailAddress}</p><p>Message: ${body}</p>`,
     })

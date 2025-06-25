@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { siteConfig } from "@/config/site"
 import { useEffect } from "react"
 import { toast } from "@/components/ui/use-toast"
-import { sendEmail, sendMail } from "../actions"
+import { sendEmail } from "../actions"
 
 export const contactSchema = z.object({
   messageBy: z
