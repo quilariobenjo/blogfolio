@@ -201,7 +201,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "GeistVF";
+    font-family: "Geist", "Geist Fallback";
 
     text-rendering: optimizeLegibility;
   }

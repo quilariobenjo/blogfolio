@@ -13,27 +13,6 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get("date") || new Date().toLocaleDateString()
     const type = searchParams.get("type") || "Blog" // 'Blog' or 'Project'
 
-    // Try to load fonts, but don't fail if they're not available
-    let geistSans = null
-    try {
-      geistSans = await fetch(
-        new URL("/assets/fonts/GeistVF.woff", request.url)
-      ).then((res) => res.arrayBuffer())
-    } catch (error) {
-      console.warn("Could not load Geist font, using fallback")
-    }
-
-    const fonts = geistSans
-      ? [
-          {
-            name: "Geist",
-            data: geistSans,
-            style: "normal" as const,
-            weight: 400 as const,
-          },
-        ]
-      : []
-
     return new ImageResponse(
       (
         <div
@@ -47,9 +26,7 @@ export async function GET(request: NextRequest) {
             justifyContent: "space-between",
             padding: "60px",
             color: "white",
-            fontFamily: geistSans
-              ? "Geist"
-              : 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontFamily: "Geist",
             position: "relative",
           }}
         >
@@ -161,7 +138,6 @@ export async function GET(request: NextRequest) {
       {
         width: 1200,
         height: 630,
-        fonts,
       }
     )
   } catch (e: any) {
