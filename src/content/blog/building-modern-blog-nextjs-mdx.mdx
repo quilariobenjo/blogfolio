@@ -1,0 +1,329 @@
+---
+title: "Building a Modern Blog with Next.js and MDX"
+description: "Learn how to create a comprehensive blog system using Next.js, MDX, and TypeScript with proper SEO and performance optimization."
+date: "2025-06-18"
+author: "Your Name"
+tags: ["Next.js", "MDX", "TypeScript", "React", "Blog"]
+published: true
+---
+
+Creating a blog with Next.js and MDX gives you the power of React components within your markdown content, making it perfect for technical blogs and documentation sites.
+
+## What is MDX?
+
+MDX is a format that lets you seamlessly write JSX in your markdown documents. This means you can:
+
+- Use React components in your markdown
+- Import and use custom components
+- Add interactive elements to your content
+- Maintain the simplicity of markdown for writing
+
+## Technologies Used
+
+- **Next.js**: A React framework for building server-side rendered applications.
+- **MDX**: A markdown format that allows you to use React components.
+- **TypeScript**: Adds static typing to JavaScript, enhancing code quality and maintainability
+- **Tailwind CSS**: A utility-first CSS framework for building responsive and modern user interfaces.
+- **gray-matter**: A library for parsing frontmatter in markdown files.
+- **rehype-pretty-code**: A plugin for syntax highlighting in MDX files.
+- **next-mdx-remote**: A library for rendering MDX content in Next.js applications.
+
+## Setting up the Project
+
+First, let's start with a Next.js project and add the necessary dependencies:
+
+```bash
+npx create-next-app@latest my-blog --typescript --tailwind --eslint
+cd my-blog
+npm install @next/mdx @mdx-js/loader @mdx-js/react gray-matter
+```
+
+### Project Structure
+
+```bash
+src/
+├── app/
+│   ├── blog/
+│   │   ├── page.tsx
+│   │   └── [...slug]/
+│   │       └── page.tsx
+├── components/
+│   mdx-components.tsx
+
+```
+
+Make sure to modify your `next.config.js` to support MDX:
+
+```js
+// next.config.mjs
+import createMDX from "@next/mdx"
+
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [require("rehype-pretty-code")],
+  },
+})
+
+export default withMDX({
+  pageExtensions: ["ts", "tsx", "js", "jsx", "mdx"],
+  // Other Next.js config options
+})
+```
+
+The mdx-components.tsx is important for @next/mdx to recognize custom components used in MDX files.
+
+Here's how we'll organize our blog:
+
+```bash
+
+src/
+├── app/
+│   ├── blog/
+│   │   ├── page.tsx
+│   │   └── [...slug]/
+│   │       └── page.tsx
+├── components/
+│   └── mdx-components.tsx
+├── content/
+│   └── blog/
+│       ├── post-1.mdx
+│       └── post-2.mdx
+└── lib/
+└── blog.ts
+
+```
+
+First we'll need to create a `blog.ts` file in the `lib` directory to handle fetching and parsing our MDX files.
+
+```tsx
+// src/lib/blog.ts
+
+import fs from "fs"
+import path from "path"
+import matter from "gray-matter"
+
+import { calculateReadingTime } from "./utils"
+export interface ReadingTime {
+  text: string
+  minutes: number
+  time: number
+  words: number
+}
+
+export interface BlogPost {
+  id: string
+  slug: string
+  slugAsParams: string
+  title: string
+  description: string
+  date: string
+  content: string
+  body: string
+  readingTime: ReadingTime
+  tags?: string[]
+  author?: string
+  published?: boolean
+  [key: string]: any
+}
+
+// Calculate reading time for blog content
+
+export function getAllBlogs(): BlogPost[] {
+  // This function should only run on the server
+  if (typeof window !== "undefined") {
+    return []
+  }
+
+  // Get the path to the blog directory
+  const blogDirectory = path.join(process.cwd(), "src/content/blog")
+
+  if (!fs.existsSync(blogDirectory)) {
+    return []
+  }
+
+  const filenames = fs.readdirSync(blogDirectory)
+  const blogs = filenames
+    .filter((name) => name.endsWith(".mdx") || name.endsWith(".md"))
+    .map((name) => {
+      const filePath = path.join(blogDirectory, name)
+      const fileContents = fs.readFileSync(filePath, "utf8")
+      const { data, content } = matter(fileContents)
+      const slug = name.replace(/\.(mdx|md)$/, "")
+
+      return {
+        id: slug,
+        slug,
+        slugAsParams: slug,
+        content,
+        body: content, // Keep raw content for processing
+        readingTime: calculateReadingTime(content),
+        published: data.published ?? true, // Default to published
+        ...data,
+      } as BlogPost
+    })
+    .filter((blog) => blog.published) // Only return published blogs
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  return blogs
+}
+
+export function getBlogBySlug(slug: string): BlogPost | null {
+  const allBlogs = getAllBlogs()
+  return allBlogs.find((blog) => blog.slug === slug) || null
+}
+
+export function getAllBlogSlugs(): string[] {
+  const allBlogs = getAllBlogs()
+  return allBlogs.map((blog) => blog.slug)
+}
+```
+
+```tsx
+// src/lib/utils.ts
+
+export function calculateReadingTime(content: string): ReadingTime {
+  const wordsPerMinute = 200
+  const words = content.trim().split(/\s+/).length
+  const minutes = Math.ceil(words / wordsPerMinute)
+  const time = minutes * 60 * 1000 // milliseconds
+
+  return {
+    text: `${minutes} min read`,
+    minutes,
+    time,
+    words,
+  }
+}
+```
+
+This `blog.ts` file provides functions to fetch all blog posts, get a specific blog post by slug, and retrieve all slugs for dynamic routing.
+
+## Features We'll Implement
+
+### 1. Dynamic Routing
+
+Our blog will use Next.js dynamic routing to generate pages for each blog post automatically.
+
+For dynamic routing we need to install another library called `next-mdx-remote`, we will create a file structure under `app/blog/[...slug]/page.tsx` to handle all blog post routes.
+
+```bash
+npm install next-mdx-remote
+```
+
+```tsx
+import { MDXRemote } from "next-mdx-remote/rsc"
+import { highlight } from "sugar-high"
+
+let components = {
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
+  p: ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
+    <p
+      className={cn("leading-7 [&:not(:first-child)]:mt-5", className)}
+      {...props}
+    />
+  ),
+  ul: ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
+    <ul className={cn("my-6 ml-6 list-disc", className)} {...props} />
+  ),
+  ol: ({ className, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
+    <ol className={cn("my-6 ml-6 list-decimal", className)} {...props} />
+  ),
+  li: ({ className, ...props }: any) => (
+    <li className={cn("mt-2", className)} {...props} />
+  ),
+  blockquote: ({ className, ...props }: any) => (
+    <blockquote
+      className={cn(
+        "[&>*]:text-muted-foreground mt-6 border-l-2 pl-6 italic",
+        className
+      )}
+      {...props}
+    />
+  ),
+  hr: ({ ...props }) => <hr className="my-4 md:my-8" {...props} />,
+  pre: ({ className, ...props }: any) => (
+    <pre
+      className={cn(
+        "mb-4 mt-6 overflow-x-auto rounded-lg border bg-zinc-950 px-3 py-4 text-zinc-50 dark:bg-zinc-900",
+        className
+      )}
+      {...props}
+    />
+  ),
+  Image: RoundedImage,
+  a: CustomLink,
+  code: Code,
+  Table,
+}
+
+export function CustomMDX(props: React.ComponentProps<typeof MDXRemote>) {
+  return <MDXRemote {...props} components={components} />
+}
+```
+
+```tsx
+// src/app/blog/[...slug]/page.tsx
+import { getBlogBySlug, getAllBlogSlugs } from "@/lib/blog"
+import { CustomMDX } from "@/components/mdx-components"
+
+export async function generateStaticParams() {
+  const slugs = getAllBlogSlugs()
+  return slugs.map((slug) => ({ slug: slug.split("/") }))
+}
+export default async function BlogPostPage({
+  params,
+}: {
+  params: { slug: string[] }
+}) {
+  const slug = params.slug.join("/")
+  const blogPost = getBlogBySlug(slug)
+
+  if (!blogPost) {
+    return <div>Blog post not found</div>
+  }
+
+  return (
+    <article className="prose prose-invert max-w-none">
+      <CustomMDX source={blogPost.body} />
+    </article>
+  )
+}
+```
+
+### 2. Syntax Highlighting
+
+We'll use `rehype-pretty-code` to add syntax highlighting to our code blocks in MDX files. This will enhance the readability of code snippets in your blog posts.
+
+### 3. Reading Time Calculation
+
+Automatically calculate and display estimated reading time for each post.
+
+### 4. SEO Optimization
+
+Generate proper metadata for each blog post to improve search engine visibility. JSon-LD structured data can be added for better SEO.
+
+## Best Practices
+
+> **Important**: Always validate your frontmatter data and handle edge cases gracefully.
+
+1. **Performance**: Use Next.js static generation for better performance
+2. **SEO**: Include proper meta tags and structured data
+3. **Accessibility**: Ensure your blog is accessible to all users
+4. **TypeScript**: Use TypeScript for better developer experience
+
+## Conclusion
+
+Building a blog with Next.js and MDX provides a powerful foundation for content creation. The combination of markdown simplicity with React component flexibility makes it an excellent choice for technical blogs.
+
+Try implementing these features step by step, and you'll have a fully functional blog system that's both powerful and maintainable.
+
+---
+
+_Happy coding! 🚀_

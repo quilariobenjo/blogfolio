@@ -1,10 +1,9 @@
 "use client"
 
 import Image from "next/image"
-import { useMDXComponent } from "next-contentlayer/hooks"
 import { cn } from "@/lib/utils"
 
-const components = {
+export const components = {
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1
       className={cn(
@@ -83,7 +82,7 @@ const components = {
   blockquote: ({ className, ...props }: any) => (
     <blockquote
       className={cn(
-        "mt-6 border-l-2 pl-6 italic [&>*]:text-muted-foreground",
+        "[&>*]:text-muted-foreground mt-6 border-l-2 pl-6 italic",
         className
       )}
       {...props}
@@ -105,7 +104,7 @@ const components = {
   ),
   tr: ({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
     <tr
-      className={cn("m-0 border-t p-0 even:bg-muted", className)}
+      className={cn("even:bg-muted m-0 border-t p-0", className)}
       {...props}
     />
   ),
@@ -129,10 +128,7 @@ const components = {
   ),
   pre: ({ className, ...props }: any) => (
     <pre
-      className={cn(
-        "mb-4 mt-6 overflow-x-auto rounded-lg border bg-black px-3 py-4",
-        className
-      )}
+      className={cn("mb-4 mt-6 overflow-x-auto rounded-lg border", className)}
       {...props}
     />
   ),
@@ -153,8 +149,12 @@ interface MdxProps {
   code: string
 }
 
-export function Mdx({ code }: MdxProps) {
-  const MDXContent = useMDXComponent(code)
-
-  return <MDXContent components={components as any} />
+// Simple markdown renderer for raw content
+export function MarkdownContent({ content }: { content: string }) {
+  return (
+    <div
+      className="prose prose-gray dark:prose-invert max-w-none"
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  )
 }

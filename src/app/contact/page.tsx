@@ -23,6 +23,7 @@ export default function Contact() {
           Contact and Social Media Links
         </p>
       </div>
+
       <div className="flex gap-4 py-4">
         {contactLinks.map(({ title, icon: IconComponent, href }) => (
           <IconTooltip key={title} content={title}>
@@ -43,12 +44,16 @@ export default function Contact() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-background text-muted-foreground px-2">
             Or contact via form
           </span>
         </div>
       </div>
       <ContactForm />
+      <p className="text-muted-foreground/80 mt-2 text-xs">
+        The contact form is working fine. Your messages will be sent to my
+        email.
+      </p>
       {/* <Alert className="mt-4" variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Warning</AlertTitle>
