@@ -1,7 +1,7 @@
 ---
 title: Understanding the useMemo and useCallback hook in React
 description: A guide that explains how to use useMemo and useCallback hook when to used it and not to used it.
-date: 2025-06-10
+date: 2025-04-10
 author: "Benjo Quilario"
 tags: ["Hooks", "TypeScript", "React"]
 published: true
@@ -71,7 +71,7 @@ This is where `useMemo` comes into play.
 Do we really need to use `useMemo` on `items`? If the `items` array stays the same, then no, because it remains the same no matter what happens. But if we look at our component, `selectedItem` is being recalculated unnecessarily.
 
 ```jsx
-import { useState, useMemo } from "react"
+import { useMemo, useState } from "react"
 
 const initialItems = new Array(29_999_999)
   .fill(0)
@@ -163,7 +163,7 @@ You'll notice in the console that "ExpensiveChildComponent rendered" is logged e
 #### The Solution: Using useCallback
 
 ```jsx
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
 
 const ExpensiveChildComponent = ({ onClick, items }) => {
   console.log("ExpensiveChildComponent rendered")
@@ -213,7 +213,7 @@ Now, `handleClick` is memoized using `useCallback`. Since the dependency array i
 Here's an example where the callback depends on state:
 
 ```jsx
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
 
 const TodoList = ({ todos, onToggle }) => {
   console.log("TodoList rendered")
