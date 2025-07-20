@@ -1,17 +1,19 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { env } from "@/env.mjs"
+import { Calendar, Clock, MoveLeft, Tag, User } from "lucide-react"
+
+import { siteConfig } from "@/config/site"
+import { getAllBlogs, getBlogBySlug } from "@/lib/blog"
+import { getRelatedBlogs } from "@/lib/blog-tags"
+import { relativeDate } from "@/lib/date"
+import { generateOGImageUrl } from "@/lib/og-image"
 import { CustomMDX } from "@/components/mdx-content"
 import { RelatedPosts } from "@/components/shared/related-posts"
 import { BlogPostJsonLd, BreadcrumbJsonLd } from "@/components/structured-data"
-import { notFound } from "next/navigation"
-import { Calendar, Clock, User, Tag, MoveLeft } from "lucide-react"
-import { relativeDate } from "@/lib/date"
-import Link from "next/link"
-import { siteConfig } from "@/config/site"
-import { env } from "@/env.mjs"
-import { getBlogBySlug, getAllBlogs } from "@/lib/blog"
-import { getRelatedBlogs } from "@/lib/blog-tags"
 import { TypographyH1, TypographyP } from "@/components/typography"
-import { generateOGImageUrl } from "@/lib/og-image"
 
 interface BlogProps {
   params: Promise<{
@@ -168,7 +170,13 @@ export default async function ArticlePage({ params }: BlogProps) {
           <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <time dateTime={blog.date}>{relativeDate(blog.date)}</time>
+              <time>
+                {new Date(blog.date).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
             </div>
 
             <div className="flex items-center gap-2">
